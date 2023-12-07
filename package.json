@@ -1,11 +1,11 @@
 {
-  "name": "chrome-extension-boilerplate-react",
-  "version": "5.0.4",
-  "description": "A chrome extension boilerplate built with React 18, Webpack 5, and Webpack Dev Server 4",
+  "name": "munchmetrics-chrome-extension",
+  "version": "1.0.0",
+  "description": "Chrome extension for the app MunchMetrics",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/lxieyang/chrome-extension-boilerplate-react.git"
+    "url": "https://github.com/jaga341/munchmetrics-chrome-extension.git"
   },
   "scripts": {
     "build": "node utils/build.js",
@@ -49,6 +49,7 @@
     "sass-loader": "^13.2.0",
     "source-map-loader": "^3.0.1",
     "style-loader": "^3.3.1",
+    "tailwindcss": "^3.3.6",
     "terser-webpack-plugin": "^5.3.6",
     "ts-loader": "^9.4.2",
     "type-fest": "^3.5.2",

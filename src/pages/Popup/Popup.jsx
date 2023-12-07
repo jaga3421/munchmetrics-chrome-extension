@@ -1,25 +1,28 @@
 import React from 'react';
-import logo from '../../assets/img/logo.svg';
-import Greetings from '../../containers/Greetings/Greetings';
 import './Popup.css';
+import AppCard from '../../components/AppCard';
 
 const Popup = () => {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/pages/Popup/Popup.jsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React!
-        </a>
+        <h4>
+          Munch<strong>Metrics</strong>
+        </h4>
       </header>
+      <main>
+        <p className="intro">
+          MunchMetrics let you analyse your spendings on food delivery apps such
+          as Swiggy and Zomato. Watch the recap of your 'Foodie Year' and know
+          what kind of your personality powered by our AI engine.
+        </p>
+
+        <AppCard />
+      </main>
+
+      <footer>
+        Visit us <a href="#"> MunchMetrics</a>
+      </footer>
     </div>
   );
 };
