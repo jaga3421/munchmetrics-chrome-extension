@@ -2,21 +2,15 @@
 
 ## Install
 
-```npm i
-
-```
+`npm i`
 
 ## Run Dev Environment
 
-```npm start
-
-```
+`npm start`
 
 ## To build
 
-```npm run build
-
-```
+`npm run build`
 
 # Chrome Extension (MV3) Boilerplate with React 18 and Webpack 5
 
