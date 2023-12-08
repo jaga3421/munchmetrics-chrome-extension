@@ -20,6 +20,12 @@ const Popup = () => {
         <AppCard />
       </main>
 
+      <div style={{ textAlign: 'center' }}>
+        <a href="#" className="btn btn-primary">
+          See your Foodie year in review
+        </a>
+      </div>
+
       <footer>
         Visit us <a href="#"> MunchMetrics</a>
       </footer>
