@@ -3,11 +3,17 @@ import './Popup.css';
 import AppCard from '../../components/AppCard';
 
 const Popup = () => {
+  const openOptions = () => {
+    chrome.tabs.create({
+      url: `chrome-extension://${chrome.runtime.id}/options.html`,
+    });
+  };
+
   return (
     <div className="App">
       <header className="App-header">
         <h4>
-          Munch<strong>Metrics</strong>
+          <strong>MUNCH</strong>METRICS
         </h4>
       </header>
       <main>
@@ -21,9 +27,7 @@ const Popup = () => {
       </main>
 
       <div style={{ textAlign: 'center' }}>
-        <a href="#" className="btn btn-primary">
-          See your Foodie year in review
-        </a>
+        <button onClick={openOptions}>Get Full Insights</button>
       </div>
 
       <footer>

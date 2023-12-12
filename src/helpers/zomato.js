@@ -1,73 +1,7 @@
-/***
- * These are the functions that will scrap the url and get details about food ordered
+/**
+ * Generates the yearly review from the yearSummary Array
+ * @param {*} yearSummary : collected from ZomataScrapper Hook
  */
-
-const getYearSummary = async (page = 1, resultArray = []) => {
-  const url = `https://www.zomato.com/webroutes/user/orders?page=${page}`;
-
-  try {
-    console.log(`Page ${page} in progress.`);
-    const response = await fetch(url);
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-
-    const data = await response.json();
-    const orders = data.entities.ORDER;
-
-    Object.keys(orders).forEach((orderId) => {
-      const orderDate = orders[orderId].orderDate;
-
-      if (orderDate.includes('2023')) {
-        const summaryObject = {
-          ...orders[orderId],
-          dishes: processDishString(orders[orderId].dishString),
-        };
-        resultArray.push(summaryObject);
-      } else if (orderDate.includes('2022')) {
-        return; // Exit the forEach loop if orderDate contains 2022
-      }
-    });
-
-    if (
-      resultArray.some((obj) =>
-        Object.values(obj)[0].orderDate?.includes('2022')
-      )
-    ) {
-      return resultArray;
-    }
-
-    // Continue the recursion only if there are more pages
-    const userOrderHistory = data.sections.SECTION_USER_ORDER_HISTORY;
-    if (userOrderHistory.currentPage <= userOrderHistory.totalPages) {
-      return await getYearSummary(
-        userOrderHistory.currentPage + 1,
-        resultArray
-      );
-    } else {
-      return resultArray;
-    }
-  } catch (error) {
-    console.error('Error in getYearSummary:', error);
-    throw error;
-  }
-  function processDishString(dishString) {
-    // Split the dishString by comma and trim spaces
-    const dishesArray = dishString.split(',').map((item) => item.trim());
-
-    // Map through the dishesArray and extract the dish name
-    const dishNames = dishesArray.map((item) => {
-      const parts = item.split('x');
-      const count = parseInt(parts[0].trim()) || 1; // Use 1 if the count is not provided or not a valid number
-      const dishName = parts[1]?.trim();
-      return Array(count).fill(dishName);
-    });
-
-    // Flatten the array and return the result
-    return [].concat(...dishNames);
-  }
-};
 
 function generateYearlyReview(yearSummary) {
   const totalOrders = yearSummary.length;
@@ -77,9 +11,6 @@ function generateYearlyReview(yearSummary) {
     const cost = parseFloat(order.totalCost.replace('₹', ''));
     return acc + cost;
   }, 0);
-
-  // Cost per month
-  const costPerMonth = (totalCost / 12).toFixed(2);
 
   // Most expensive order
   const mostExpensiveOrder = yearSummary.reduce(
@@ -147,18 +78,27 @@ function generateYearlyReview(yearSummary) {
     new Set(yearSummary.map((order) => order.resInfo.locality.localityName))
   );
 
+  // All years
+  const allYears = [
+    ...new Set(
+      yearSummary
+        .map((order) => Number(order.orderDate.year))
+        .sort((a, b) => b - a)
+    ),
+  ];
+
   // Construct the analytics object
   const analytics = {
     total_orders: totalOrders,
-    total_cost_spent: `₹${totalCost.toFixed(2)}`,
-    cost_per_month: `₹${costPerMonth}`,
+    total_cost_spent: totalCost.toFixed(2),
     most_expensive_order: mostExpensiveOrder,
     least_expensive_order: leastExpensiveOrder,
-    average_order_cost: `₹${averageOrderCost}`,
+    average_order_cost: averageOrderCost,
     top_dishes: topDishes,
     top_restaurants: topRestaurants,
     top_cities: topCities,
     all_cities: allCities,
+    all_years: allYears,
   };
 
   return analytics;
@@ -181,4 +121,4 @@ function groupOrdersByMonth(yearSummary) {
   return monthlyOrders;
 }
 
-export { getYearSummary, groupOrdersByMonth, generateYearlyReview };
+export { groupOrdersByMonth, generateYearlyReview };
