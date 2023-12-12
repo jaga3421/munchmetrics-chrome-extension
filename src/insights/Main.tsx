@@ -10,13 +10,13 @@ function Main() {
 
   useEffect(() => {
     chrome.storage.local.get('zomato').then((res) => {
-
+      if(res.zomato === undefined) return;
       setData(generateYearlyReview(res.zomato));
     });
   }, []);
   return (
     <div style={{ minHeight: "calc(100vh - 104px" }}>
-      {Object.keys(data).length !== 0 ? (
+      {Object.keys(data)?.length !== 0 ? (
         <>
 
           <Hero data={data} />
@@ -24,7 +24,7 @@ function Main() {
           <Top10 data={data} />
         </>
       ) : (
-        ""
+        "Please open extension on Zomato.com to collect your expense"
       )}
     </div>
   );
