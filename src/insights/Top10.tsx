@@ -1,6 +1,9 @@
 import React from "react";
+interface Props {
+  data: any;
+}
 
-function Top10({ data }) {
+function Top10({ data }: Props) {
   return (
     <div className="container mx-auto max-w-4xl p-3 mt-5 md:flex">
       {/* Card component */}

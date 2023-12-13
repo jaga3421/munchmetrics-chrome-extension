@@ -3,7 +3,19 @@
  * @param {*} yearSummary : collected from ZomataScrapper Hook
  */
 
-function generateYearlyReview(yearSummary) {
+import { Order, ReviewSummary } from '../types';
+
+interface OrdersByCost {
+  order: Order | null;
+  cost: number;
+}
+
+interface Dish {
+  order: Order | null;
+  cost: number;
+}
+
+function generateYearlyReview(yearSummary: Order[]): ReviewSummary {
   const totalOrders = yearSummary.length;
 
   // Total cost spent
@@ -13,7 +25,7 @@ function generateYearlyReview(yearSummary) {
   }, 0);
 
   // Most expensive order
-  const mostExpensiveOrder = yearSummary.reduce(
+  const mostExpensiveOrder = yearSummary.reduce<OrdersByCost>(
     (maxOrder, order) => {
       const cost = parseFloat(order.totalCost.replace('₹', ''));
       return cost > maxOrder.cost ? { order, cost } : maxOrder;
@@ -22,7 +34,7 @@ function generateYearlyReview(yearSummary) {
   );
 
   // Least expensive order
-  const leastExpensiveOrder = yearSummary.reduce(
+  const leastExpensiveOrder = yearSummary.reduce<OrdersByCost>(
     (minOrder, order) => {
       const cost = parseFloat(order.totalCost.replace('₹', ''));
       return cost < minOrder.cost || minOrder.cost === 0
@@ -36,12 +48,13 @@ function generateYearlyReview(yearSummary) {
   const averageOrderCost = (totalCost / totalOrders).toFixed(2);
 
   // Top dishes
-  const dishFrequency = yearSummary.reduce((acc, order) => {
+  const dishFrequency = yearSummary.reduce<Dish>((acc, order) => {
     order.dishes.forEach((dish) => {
       acc[dish] = (acc[dish] || 0) + 1;
     });
     return acc;
   }, {});
+
   const topDishes = Object.entries(dishFrequency)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 10)
@@ -109,7 +122,7 @@ function groupOrdersByMonth(yearSummary) {
   const monthlyOrders = Array.from({ length: 12 }, () => []);
 
   // Process each order in the yearSummary
-  yearSummary.forEach((order) => {
+  yearSummary.forEach((order: Order) => {
     // Extract month from the orderDate
     const orderDate = new Date(order.orderDate.replace(' at', ''));
     const month = orderDate.getMonth();

@@ -1,10 +1,6 @@
-@tailwind base;
-@tailwind components;
-
 body {
-  width: 300px;
-  height: 550px;
+  width: 450px;
+  height: 650px;
   margin: 0;
-
   position: relative;
 }
