@@ -16,7 +16,7 @@ const MiniStats = ({ data }) => {
 
             <div className="mb-1 flex justify-center">
               <div className="mb-2 text-green-500 font-light text-right">
-                Restaurents you ordered from
+                Restaurants you ordered from
               </div>
               <div className="font-bold  px-2">
                 {data.top_restaurants?.length}

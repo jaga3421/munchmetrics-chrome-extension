@@ -3,36 +3,20 @@ import './Popup.css';
 import AppCard from '../../components/AppCard';
 
 const Popup = () => {
-  const openOptions = () => {
-    chrome.tabs.create({
-      url: `chrome-extension://${chrome.runtime.id}/options.html`,
-    });
-  };
-
   return (
-    <div className="App">
-      <header className="App-header">
-        <h4>
-          <strong>MUNCH</strong>METRICS
+    <div className="App font-sans bg-gray-50">
+      <header className="p-2 py-4 sticky top-0 z-10 bg-gray-400 text-white shadow">
+        <h4 className="text-lg">
+          <span className="font-bold">MUNCH</span>METRICS
         </h4>
       </header>
-      <main>
-        <p className="intro">
-          MunchMetrics let you analyse your spendings on food delivery apps such
-          as Swiggy and Zomato. Watch the recap of your 'Foodie Year' and know
-          what kind of your personality powered by our AI engine.
-        </p>
-
+      <main className="p-2">
         <AppCard />
       </main>
 
-      <div style={{ textAlign: 'center' }}>
-        <button onClick={openOptions}>Get Full Insights</button>
-      </div>
+      <div style={{ textAlign: 'center' }}></div>
 
-      <footer>
-        Visit us <a href="#"> MunchMetrics</a>
-      </footer>
+      <footer className="p-2 text-center"></footer>
     </div>
   );
 };

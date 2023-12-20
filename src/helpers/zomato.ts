@@ -15,6 +15,11 @@ interface Dish {
   cost: number;
 }
 
+interface SingleOrder {
+  cost: number;
+  order: Order;
+}
+
 function generateYearlyReview(yearSummary: Order[]): ReviewSummary {
   const totalOrders = yearSummary.length;
 
@@ -75,6 +80,11 @@ function generateYearlyReview(yearSummary: Order[]): ReviewSummary {
       count,
     }));
 
+  // count of unique resInfo based on resInfo.id
+  const uniqueRestaurants = new Set(
+    yearSummary.map((order) => order.resInfo.id)
+  ).size;
+
   // Top cities
   const cityFrequency = yearSummary.reduce((acc, order) => {
     const cityName = order.resInfo.locality.localityName;
@@ -92,13 +102,10 @@ function generateYearlyReview(yearSummary: Order[]): ReviewSummary {
   );
 
   // All years
-  const allYears = [
-    ...new Set(
-      yearSummary
-        .map((order) => Number(order.orderDate.year))
-        .sort((a, b) => b - a)
-    ),
-  ];
+
+  const allYears = Array.from(
+    new Set(yearSummary.map((order) => Number(order.orderDate.year)))
+  ).sort((a, b) => b - a);
 
   // Construct the analytics object
   const analytics = {
@@ -112,6 +119,7 @@ function generateYearlyReview(yearSummary: Order[]): ReviewSummary {
     top_cities: topCities,
     all_cities: allCities,
     all_years: allYears,
+    total_restaurants: uniqueRestaurants,
   };
 
   return analytics;

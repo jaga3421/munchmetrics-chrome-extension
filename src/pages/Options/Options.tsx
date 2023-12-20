@@ -3,6 +3,7 @@ import Header from '../../insights/Header';
 import Main from '../../insights/Main';
 import Footer from '../../insights/Footer';
 import './Options.css';
+import Dashboard from './Dashboard';
 
 interface Props {
   title: string;
@@ -12,9 +13,7 @@ interface Props {
 
 const Options: React.FC<Props> = ({ title }: Props) => {
   return <>
-    <Header />
-    <Main />
-    <Footer />
+    <Dashboard />
   </>
 };
 
