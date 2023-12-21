@@ -1,11 +1,37 @@
-import React from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import './Popup.css';
 import AppCard from '../../components/AppCard';
 
+import { FiRefreshCw } from 'react-icons/fi';
+
 const Popup = () => {
+  const headerRef = useRef(null);
+  const footerRef = useRef(null);
+  const [footerHeight, setFooterHeight] = useState(0);
+
+  useEffect(() => {
+    if (footerRef.current) {
+      setFooterHeight(footerRef.current.offsetHeight);
+    }
+  }, []);
+
+  const clearData = () => {
+    chrome.storage.local.clear();
+    chrome.storage.sync.clear();
+    window.location.reload();
+  };
+
   return (
-    <div className="App font-sans bg-gray-50">
-      <header className="p-2 py-4 sticky top-0 z-10 bg-gray-400 text-white shadow">
+    <div
+      className="App font-sans bg-gray-50"
+      style={{
+        maxHeight: `calc(100% - ${footerHeight}px)`,
+      }}
+    >
+      <header
+        ref={headerRef}
+        className="p-2 py-4 sticky top-0 z-10 bg-blue-400 text-white shadow"
+      >
         <h4 className="text-lg">
           <span className="font-bold">MUNCH</span>METRICS
         </h4>
@@ -16,7 +42,11 @@ const Popup = () => {
 
       <div style={{ textAlign: 'center' }}></div>
 
-      <footer className="p-2 text-center"></footer>
+      <footer ref={footerRef} className="p-2 fixed bottom-0 left-0 w-100">
+        <div className="flex flex-row justify-end  px-2">
+          <FiRefreshCw className="cursor-pointer" onClick={clearData} />
+        </div>
+      </footer>
     </div>
   );
 };

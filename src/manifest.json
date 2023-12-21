@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "MunchMetrics",
-  "description": "Chrome extension for the app MunchMetrics | Get infographics of your foodventure",
+  "name": "MunchMetrics | Swiggy Zomato Expense Tracker",
+  "description": "Get insights of your food adventures from Zomato and Swiggy. Track  expenses and get complete visual insights of your food habits",
   "options_page": "options.html",
   "background": { "service_worker": "background.bundle.js" },
   "action": {
@@ -15,7 +15,7 @@
   },
   "content_scripts": [
     {
-      "matches": ["http://*/*", "https://*/*", "<all_urls>"],
+      "matches": ["*://*.swiggy.com/*", "*://*.zomato.com/*"],
       "js": ["contentScript.bundle.js"],
       "css": ["content.styles.css"]
     }

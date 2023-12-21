@@ -10,6 +10,7 @@ function AppCard() {
     yearSummary,
     getYearSummary,
     setYearSummary,
+    currentPage,
     totalOrders,
     loading,
     error,
@@ -66,7 +67,7 @@ function AppCard() {
           collectData={collectData}
           loading={loading}
           totalOrders={totalOrders}
-          currentOrders={yearSummary.length}
+          currentOrders={currentPage}
         />
         <NoEntrySwiggy />
       </>
@@ -95,7 +96,7 @@ function AppCard() {
           ))}
         </select>
         <select
-          oncChange={onYearSelect}
+          onChange={onYearSelect}
           className="p-1 px-4 mt-2 border border-gray-200 text-red-400 bg-white"
           disabled={true}
         >
