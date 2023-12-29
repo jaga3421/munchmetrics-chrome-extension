@@ -3,24 +3,7 @@
  * @param {*} yearSummary : collected from ZomataScrapper Hook
  */
 
-import { Order, ReviewSummary } from '../types';
-
-interface OrdersByCost {
-  order: Order | null;
-  cost: number;
-}
-
-interface Dish {
-  order: Order | null;
-  cost: number;
-}
-
-interface SingleOrder {
-  cost: number;
-  order: Order;
-}
-
-function generateYearlyReview(yearSummary: Order[]): ReviewSummary {
+function generateYearlyReview(yearSummary) {
   const totalOrders = yearSummary.length;
 
   // Total cost spent
@@ -30,7 +13,7 @@ function generateYearlyReview(yearSummary: Order[]): ReviewSummary {
   }, 0);
 
   // Most expensive order
-  const mostExpensiveOrder = yearSummary.reduce<OrdersByCost>(
+  const mostExpensiveOrder = yearSummary.reduce(
     (maxOrder, order) => {
       const cost = parseFloat(order.totalCost.replace('₹', ''));
       return cost > maxOrder.cost ? { order, cost } : maxOrder;
@@ -39,7 +22,7 @@ function generateYearlyReview(yearSummary: Order[]): ReviewSummary {
   );
 
   // Least expensive order
-  const leastExpensiveOrder = yearSummary.reduce<OrdersByCost>(
+  const leastExpensiveOrder = yearSummary.reduce(
     (minOrder, order) => {
       const cost = parseFloat(order.totalCost.replace('₹', ''));
       return cost < minOrder.cost || minOrder.cost === 0
@@ -53,9 +36,10 @@ function generateYearlyReview(yearSummary: Order[]): ReviewSummary {
   const averageOrderCost = (totalCost / totalOrders).toFixed(2);
 
   // Top dishes
-  const dishFrequency = yearSummary.reduce<Dish>((acc, order) => {
+  const dishFrequency = yearSummary.reduce((acc, order) => {
     order.dishes.forEach((dish) => {
-      acc[dish] = (acc[dish] || 0) + 1;
+      if (!!dish && dish.trim() != '' && dish != null)
+        acc[dish] = (acc[dish] || 0) + 1;
     });
     return acc;
   }, {});
@@ -130,7 +114,7 @@ function groupOrdersByMonth(yearSummary) {
   const monthlyOrders = Array.from({ length: 12 }, () => []);
 
   // Process each order in the yearSummary
-  yearSummary.forEach((order: Order) => {
+  yearSummary.forEach((order) => {
     // Extract month from the orderDate
     const orderDate = new Date(order.orderDate.replace(' at', ''));
     const month = orderDate.getMonth();
@@ -143,3 +127,4 @@ function groupOrdersByMonth(yearSummary) {
 }
 
 export { groupOrdersByMonth, generateYearlyReview };
+// Export statements are not needed in JavaScript.
