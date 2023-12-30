@@ -16,6 +16,9 @@ const NoEntryZomato = ({ collectData, loading, currentOrders }) => {
       if (data?.sections?.SECTION_USER_ORDER_HISTORY?.totalPages) {
         setZomatoLoggedIn(true);
         setTotalOrders(data?.sections?.SECTION_USER_ORDER_HISTORY?.count);
+        chrome.storage.local.set({
+          zomatePages: data?.sections?.SECTION_USER_ORDER_HISTORY.totalPages,
+        });
       }
       setZomatoChecked(true);
     };

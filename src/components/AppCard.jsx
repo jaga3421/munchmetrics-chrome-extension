@@ -156,11 +156,10 @@ function AppCard() {
       </div>
       <div className="text-center mt-3">
         <button
-          className="btn btn-primary bg-red-300 hover:bg-red-300 text-white p-2 border-red-300 rounded w-1/2 mx-auto my-1 cursor-not-allowed"
+          className="btn btn-primary bg-red-600 hover:bg-red-400 text-white p-2 border-red-300 rounded w-1/2 mx-auto my-1"
           onClick={openOptions}
-          disabled={true}
         >
-          Get Full Insights (coming soon)
+          See detailed analysis
         </button>
       </div>
     </>

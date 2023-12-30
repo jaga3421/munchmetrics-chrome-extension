@@ -106,6 +106,8 @@ function generateYearlyReview(yearSummary) {
     total_restaurants: uniqueRestaurants,
   };
 
+  console.log(analytics);
+
   return analytics;
 }
 

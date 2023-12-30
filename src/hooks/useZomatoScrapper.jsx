@@ -33,8 +33,9 @@ const useZomatoScrapper = () => {
   };
 
   const getYearSummary = async () => {
-    fetchData(1).then(async (data) => {
-      const totalPages = data.sections.SECTION_USER_ORDER_HISTORY.totalPages;
+    chrome.storage.local.get('zomatePages', async function (res) {
+      const totalPages = res.zomatePages;
+
       const pagesArray = Array.from(Array(totalPages).keys()).map(
         (item) => item + 1
       );
@@ -44,7 +45,7 @@ const useZomatoScrapper = () => {
 
       try {
         const results = await Promise.all(promises);
-        console.log('results:', results);
+
         results.forEach((result) => {
           const orders = result.entities.ORDER;
           Object.keys(orders).forEach((orderId) => {
@@ -58,7 +59,7 @@ const useZomatoScrapper = () => {
         });
         setLoading(false);
         setYearSummary(summary);
-        console.log('summary:', summary);
+
         return summary;
       } catch (error) {
         console.error('Error in getYearSummary:', error);
