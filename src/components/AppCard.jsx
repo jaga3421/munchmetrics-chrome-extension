@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import useZomatoScrapper from '../hooks/useZomatoScrapper';
-import { generateYearlyReview } from '../helpers/zomato';
+import { generateYearlyReview, groupByYears } from '../helpers/zomato';
 import NoEntryZomato from './NoEntryZomato';
 import NoEntrySwiggy from './NoEntrySwiggy';
 import { formatINR } from '../helpers/formatINR';
@@ -16,7 +16,8 @@ function AppCard() {
     error,
   } = useZomatoScrapper();
   const [yearlyReview, setYearlyReview] = useState({});
-  const [originalYearlyReview, setOriginalYearlyReview] = useState({});
+
+  const [allYearObject, setAllYearObject] = useState([]);
 
   const collectData = () => {
     setYearlyReview({});
@@ -29,11 +30,9 @@ function AppCard() {
     if (year === 'all') {
       setYearlyReview(generateYearlyReview(yearSummary));
     } else {
-      const yearData = yearSummary.filter(
-        (order) => order.orderDate.year === parseInt(year)
-      );
-      setYearlyReview(generateYearlyReview(yearData));
+      setYearlyReview(generateYearlyReview(allYearObject[year]));
     }
+    console.log();
   };
 
   const openOptions = () => {
@@ -52,10 +51,12 @@ function AppCard() {
 
   useEffect(() => {
     if (!loading && !error && yearSummary.length > 0) {
+      const ordersByYear = groupByYears(yearSummary);
       const review = generateYearlyReview(yearSummary);
+      setAllYearObject(ordersByYear);
+      console.log(ordersByYear);
 
       setYearlyReview(review);
-      setOriginalYearlyReview(review);
       chrome.storage.local.set({ zomato: yearSummary });
     }
   }, [error, loading, yearSummary]);
@@ -89,7 +90,7 @@ function AppCard() {
           className="p-1 px-4 mt-2 border border-gray-200 text-red-400 bg-white"
         >
           <option value={'all'}>Till Date</option>
-          {originalYearlyReview?.all_years?.map((year, i) => (
+          {Object.keys(allYearObject)?.map((year, i) => (
             <option value={year} key={i}>
               {year}
             </option>

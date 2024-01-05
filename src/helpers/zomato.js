@@ -3,6 +3,30 @@
  * @param {*} yearSummary : collected from ZomataScrapper Hook
  */
 
+function groupByYears(arr) {
+  const yearObject = {};
+
+  arr.forEach((order) => {
+    const year = order.orderDate.year;
+
+    if (yearObject[year]) {
+      // If the year already exists, push the order to the existing array
+      yearObject[year].push(order);
+    } else {
+      // If the year doesn't exist, create a new array with the order
+      yearObject[year] = [order];
+    }
+  });
+  let sortedKeys = Object.keys(yearObject).sort((a, b) => b.localeCompare(a));
+  // Create a new object with sorted key-value pairs
+  let sortedObject = {};
+  sortedKeys.forEach((key) => {
+    sortedObject[key] = yearObject[key];
+  });
+
+  return sortedObject;
+}
+
 function generateYearlyReview(yearSummary) {
   const totalOrders = yearSummary.length;
 
@@ -91,6 +115,26 @@ function generateYearlyReview(yearSummary) {
     new Set(yearSummary.map((order) => Number(order.orderDate.year)))
   ).sort((a, b) => b - a);
 
+  const getTop10TimeSlots = (orderArray) => {
+    const timeSlotCount = {};
+
+    orderArray.forEach((order) => {
+      const timeSlot = order.orderDate.timeSlot;
+      timeSlotCount[timeSlot] = (timeSlotCount[timeSlot] || 0) + 1;
+    });
+
+    // Convert the object into an array of {hour, count} objects and sort in descending order
+    const timeSlotArray = Object.entries(timeSlotCount)
+      .map(([hour, count]) => ({ hour: parseInt(hour), count }))
+      .sort((a, b) => b.count - a.count);
+
+    // Slice the array to get the top 10 elements
+    const top10TimeSlots = timeSlotArray.slice(0, 10);
+
+    return top10TimeSlots;
+  };
+  const top10Time = getTop10TimeSlots(yearSummary);
+
   // Construct the analytics object
   const analytics = {
     total_orders: totalOrders,
@@ -104,9 +148,8 @@ function generateYearlyReview(yearSummary) {
     all_cities: allCities,
     all_years: allYears,
     total_restaurants: uniqueRestaurants,
+    top_10_time: top10Time,
   };
-
-  console.log(analytics);
 
   return analytics;
 }
@@ -118,8 +161,13 @@ function groupOrdersByMonth(yearSummary) {
   // Process each order in the yearSummary
   yearSummary.forEach((order) => {
     // Extract month from the orderDate
-    const orderDate = new Date(order.orderDate.replace(' at', ''));
-    const month = orderDate.getMonth();
+    let month;
+    if (typeof order.orderDate === 'string') {
+      const orderDate = new Date(order.orderDate.replace(' at', ''));
+      month = orderDate.getMonth();
+    } else {
+      month = order.orderDate.month - 1;
+    }
 
     // Push the order to the corresponding month
     monthlyOrders[month].push(order);
@@ -128,5 +176,5 @@ function groupOrdersByMonth(yearSummary) {
   return monthlyOrders;
 }
 
-export { groupOrdersByMonth, generateYearlyReview };
+export { groupOrdersByMonth, generateYearlyReview, groupByYears };
 // Export statements are not needed in JavaScript.
