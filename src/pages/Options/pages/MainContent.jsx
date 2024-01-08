@@ -6,8 +6,10 @@ import {
   generateYearlyReview,
   groupByYears,
   groupOrdersByMonth,
+  readifyTimeSlot,
 } from '../../../helpers/zomato';
 import CardHolder from '../components/CardHolder';
+import HourChart from '../components/HourChart';
 
 function MainContent() {
   const [currentYear, setCurrentYear] = useState(0);
@@ -27,10 +29,17 @@ function MainContent() {
     setCurrentYear(e.target.value);
   };
 
+  const convertTimeSlot = (timeSlots) => {
+    const a = timeSlots.map((slot) => {
+      return { hour: readifyTimeSlot(slot.hour), count: slot.count };
+    });
+    return a;
+  };
+
   useEffect(() => {
     chrome.storage.local.get(['zomato'], function (result) {
       const allYearObject = groupByYears(result.zomato);
-      console.log(allYearObject);
+
       setAllYears(allYearObject);
       setCurrentYear('all');
       setCurrentYearReview(
@@ -48,8 +57,8 @@ function MainContent() {
     );
 
   return (
-    <div className="w-full  bg-gray-50">
-      <nav className="p-4 flex flex-row space-around">
+    <div className="w-full  bg-gray-50 h-full overflow-hidden">
+      <nav className="p-4 flex flex-row space-around sticky top-0 shadow-sm">
         <div className="title">Insights {currentYear}</div>
         <div className="ml-auto">
           <select
@@ -65,15 +74,27 @@ function MainContent() {
           </select>
         </div>
       </nav>
-      <CardHolder yearReview={currentYearReview} />
 
-      <div className="p-4 flex flex-row space-x-2 w-full">
-        <MonthsChart monthWise={currentMonthWise} />
-        <Top10
-          food={currentYearReview.top_dishes}
-          places={currentYearReview.top_restaurants}
-        />
-      </div>
+      <main
+        className="h-full overflow-auto"
+        style={{ height: 'calc(100vh - 63px)' }}
+      >
+        <CardHolder yearReview={currentYearReview} />
+
+        <div className="p-4 flex flex-row space-x-2 w-full">
+          <MonthsChart monthWise={currentMonthWise} />
+          <Top10
+            food={currentYearReview.top_dishes}
+            places={currentYearReview.top_restaurants}
+          />
+        </div>
+
+        <div className="p-4 flex flex-row space-x-2 w-full">
+          <HourChart
+            top10Time={convertTimeSlot(currentYearReview?.top_10_time)}
+          />
+        </div>
+      </main>
     </div>
   );
 }

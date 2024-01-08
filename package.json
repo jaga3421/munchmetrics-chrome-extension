@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.1.1",
+    "@react-google-maps/api": "^2.19.2",
     "axios": "^1.6.2",
     "concurrently": "^8.2.2",
     "lottie": "^0.0.1",

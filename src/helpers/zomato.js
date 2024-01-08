@@ -133,6 +133,7 @@ function generateYearlyReview(yearSummary) {
 
     return top10TimeSlots;
   };
+
   const top10Time = getTop10TimeSlots(yearSummary);
 
   // Construct the analytics object
@@ -176,5 +177,25 @@ function groupOrdersByMonth(yearSummary) {
   return monthlyOrders;
 }
 
-export { groupOrdersByMonth, generateYearlyReview, groupByYears };
+function readifyTimeSlot(hour) {
+  if (hour < 0 || hour > 23) {
+    return 'Invalid hour';
+  }
+
+  const isPM = hour >= 12;
+  const ampmHour = hour % 12 || 12; // Convert 0 to 12 for midnight
+
+  const timeString = `${ampmHour}:00 ${isPM ? 'PM' : 'AM'} - ${
+    ampmHour === 12 ? 11 : ampmHour - 1
+  }:59 ${isPM ? 'PM' : 'AM'}`;
+
+  return timeString;
+}
+
+export {
+  groupOrdersByMonth,
+  generateYearlyReview,
+  groupByYears,
+  readifyTimeSlot,
+};
 // Export statements are not needed in JavaScript.
