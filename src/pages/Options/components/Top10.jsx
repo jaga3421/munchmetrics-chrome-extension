@@ -1,4 +1,28 @@
+import { motion } from 'framer-motion';
 import React, { useState } from 'react';
+
+const TabButton = ({ activeTab, handleTabClick, tabName, children }) => (
+  <button
+    onClick={() => handleTabClick(tabName)}
+    className={`${
+      activeTab === tabName
+        ? 'bg-zomato-800 text-zomato-100 font-semibold'
+        : 'bg-zomato-300'
+    } p-4 flex-grow`}
+  >
+    {children}
+  </button>
+);
+
+const TabList = ({ list }) => (
+  <ul>
+    {list.map((item, index) => (
+      <li key={index} className="mb-2">
+        <div className="text-sm text-gray-800">{item}</div>
+      </li>
+    ))}
+  </ul>
+);
 
 const Top10Tabs = ({ food, places }) => {
   const [activeTab, setActiveTab] = useState('food');
@@ -11,49 +35,35 @@ const Top10Tabs = ({ food, places }) => {
   const placesList = places.map((a) => `${a.resInfo?.name} : (${a.count})`);
 
   return (
-    <div className="w-4/6 border rounded">
-      <div className="flex ">
-        <button
-          onClick={() => handleTabClick('food')}
-          className={`${
-            activeTab === 'food' ? 'bg-gray-500 text-gray-100' : 'bg-gray-300'
-          } px-4 py-2  flex-grow`}
+    <motion.div
+      className="w-1/3 border rounded border-zomato-400 bg-zomato-100"
+      initial={{ y: 50, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.5, delay: 0.5 }}
+    >
+      <div className="flex">
+        <TabButton
+          activeTab={activeTab}
+          handleTabClick={handleTabClick}
+          tabName="food"
         >
           Most Enjoyed Food
-        </button>
+        </TabButton>
 
-        <button
-          onClick={() => handleTabClick('places')}
-          className={`${
-            activeTab === 'places' ? 'bg-gray-500 text-gray-100' : 'bg-gray-300'
-          } px-4 py-2  flex-grow`}
+        <TabButton
+          activeTab={activeTab}
+          handleTabClick={handleTabClick}
+          tabName="places"
         >
           Most Ordered From
-        </button>
+        </TabButton>
       </div>
 
-      <div className="mt-4 p-4">
-        {activeTab === 'food' && (
-          <ul>
-            {foodList.map((item, index) => (
-              <li key={index} className="mb-2">
-                {item}
-              </li>
-            ))}
-          </ul>
-        )}
-
-        {activeTab === 'places' && (
-          <ul>
-            {placesList.map((item, index) => (
-              <li key={index} className="mb-2">
-                {item}
-              </li>
-            ))}
-          </ul>
-        )}
+      <div className="mt-4 p-400 p-4">
+        {activeTab === 'food' && <TabList list={foodList} />}
+        {activeTab === 'places' && <TabList list={placesList} />}
       </div>
-    </div>
+    </motion.div>
   );
 };
 

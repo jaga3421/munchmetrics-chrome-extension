@@ -184,10 +184,11 @@ function readifyTimeSlot(hour) {
 
   const isPM = hour >= 12;
   const ampmHour = hour % 12 || 12; // Convert 0 to 12 for midnight
+  const nextHour = (hour + 1) % 12 || 12; // Calculate the next hour
 
-  const timeString = `${ampmHour}:00 ${isPM ? 'PM' : 'AM'} - ${
-    ampmHour === 12 ? 11 : ampmHour - 1
-  }:59 ${isPM ? 'PM' : 'AM'}`;
+  const timeString = `${ampmHour}:00 ${isPM ? 'PM' : 'AM'} - ${nextHour}:00 ${
+    isPM && nextHour !== 12 ? 'PM' : 'AM'
+  }`;
 
   return timeString;
 }

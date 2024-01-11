@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 
 import MonthsChart from '../components/MonthsChart';
 import Top10 from '../components/Top10';
@@ -52,28 +53,45 @@ function MainContent() {
   if (Object.values(currentYearReview).length === 0)
     return (
       <>
-        <div>Please wait</div>
+        <div className="w-screen h-screen flex justify-center items-center">
+          Please wait
+        </div>
       </>
     );
 
   return (
-    <div className="w-full  bg-gray-50 h-full overflow-hidden">
-      <nav className="p-4 flex flex-row space-around sticky top-0 shadow-sm">
-        <div className="title">Insights {currentYear}</div>
-        <div className="ml-auto">
+    <div className="w-full  bg-zomato-100 h-full overflow-hidden">
+      <motion.nav
+        className="p-4 flex flex-row space-around sticky top-0 shadow-sm bg-zomato-100"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+      >
+        <h1 className="title">Insights {currentYear}</h1>
+        <div className="ml-auto flex space-x-2 text-xs">
           <select
             onChange={selectYear}
             className="p-1 bg-gray-200 border border-gray-300 rounded"
           >
             <option value={'all'}>Till Date</option>
-            {Object.keys(allYears).map((year, i) => (
-              <option value={year} key={i}>
-                {year}
-              </option>
-            ))}
+            {Object.keys(allYears)
+              .sort((a, b) => b - a)
+              .map((year, i) => (
+                <option value={year} key={i}>
+                  {year}
+                </option>
+              ))}
+          </select>
+          <select
+            className="p-1 bg-gray-200 border border-gray-300 rounded cursor-not-allowed"
+            disabled={true}
+          >
+            <option value={'zomato'}>Zomato</option>
+            <option value={'all'}>All Apps</option>
+            <option value={'swiggy'}>Swiggy</option>
           </select>
         </div>
-      </nav>
+      </motion.nav>
 
       <main
         className="h-full overflow-auto"
@@ -82,18 +100,19 @@ function MainContent() {
         <CardHolder yearReview={currentYearReview} />
 
         <div className="p-4 flex flex-row space-x-2 w-full">
-          <MonthsChart monthWise={currentMonthWise} />
           <Top10
             food={currentYearReview.top_dishes}
             places={currentYearReview.top_restaurants}
           />
-        </div>
 
-        <div className="p-4 flex flex-row space-x-2 w-full">
           <HourChart
             top10Time={convertTimeSlot(currentYearReview?.top_10_time)}
           />
         </div>
+
+        <MonthsChart monthWise={currentMonthWise} currentYear={currentYear} />
+
+        <div className="p-4 flex flex-row space-x-2 w-full"></div>
       </main>
     </div>
   );

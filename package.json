@@ -1,6 +1,6 @@
 {
   "name": "munchmetrics-chrome-extension",
-  "version": "1.4.0",
+  "version": "2.0.0",
   "description": "Chrome extension for the app MunchMetrics",
   "license": "MIT",
   "repository": {
@@ -19,6 +19,7 @@
     "@react-google-maps/api": "^2.19.2",
     "axios": "^1.6.2",
     "concurrently": "^8.2.2",
+    "framer-motion": "^10.18.0",
     "lottie": "^0.0.1",
     "lottie-react": "^2.4.0",
     "react": "^18.2.0",
