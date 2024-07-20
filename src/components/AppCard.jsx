@@ -63,15 +63,20 @@ function AppCard() {
 
   if (!Object.keys(yearlyReview).length)
     return (
-      <>
+      <div className='flex flex-row space-x-2'>
         <NoEntryZomato
           collectData={collectData}
           loading={loading}
           totalOrders={totalOrders}
           currentOrders={currentPage}
         />
-        <NoEntrySwiggy />
-      </>
+        <NoEntrySwiggy 
+          collectData={collectData}
+          loading={loading}
+          totalOrders={totalOrders}
+          currentOrders={currentPage}
+        />
+      </div>
     );
 
   if (error) {

@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import ProgressBar from './ProgressBar';
+import { ImSpinner8 } from "react-icons/im";
+
 
 const NoEntryZomato = ({ collectData, loading, currentOrders }) => {
   const [zomatoLoggedIn, setZomatoLoggedIn] = useState(false);
@@ -26,10 +28,10 @@ const NoEntryZomato = ({ collectData, loading, currentOrders }) => {
   }, []);
 
   return (
-    <div className="flex flex-col bg-blue-50 mb-3">
-      <div className="flex bg-white shadow rounded overflow-hidden ">
+    <div className="flex-1">
+      <div className="flex flex-col bg-white shadow rounded overflow-hidden ">
         <div
-          className="w-1/3 bg-cover"
+          className="bg-cover h-32"
           style={{
             backgroundPosition: 'center',
 
@@ -37,8 +39,8 @@ const NoEntryZomato = ({ collectData, loading, currentOrders }) => {
               "url('https://upload.wikimedia.org/wikipedia/commons/7/75/Zomato_logo.png')",
           }}
         ></div>
-        <div className="w-2/3 p-4">
-          <p className="text-gray-700 text-sm flex items-center min-h-[60px]">
+        <div className="p-4 h-28 text-sm flex items-center relative">
+          <p className="text-gray-700">
             {loading ? (
               <>
                 <ProgressBar current={currentOrders} total={totalOrders} />
@@ -47,20 +49,21 @@ const NoEntryZomato = ({ collectData, loading, currentOrders }) => {
                 </span>
               </>
             ) : !zomatoChecked ? (
-              'Please wait'
+              <div className='flex flex-row space-x-2 items-center'>
+                  <ImSpinner8 className='animate-spin mr-2 text-red-600' />Checking Login status
+              </div>
             ) : (
               <>
                 {zomatoLoggedIn ? (
-                  <span className="inline">
-                    You have ordered{' '}
-                    <span className="font-semibold">{totalOrders}</span> times
-                    from Zomato{' '}
-                  </span>
+                  <div className="">
+                    You are logged into Zomato
+                    <div className='absolute bottom-2 right-2 animate-pulse rounded-full h-2 w-2 bg-green-700'></div>
+                  </div>
                 ) : (
                   <div className="block">
                     Please{' '}
                     <a
-                      href="https://www.zomato.com/"
+                      href="https://www.zomato.com/login"
                       target="_blank"
                       rel="noreferrer"
                       className="text-blue-500 underline px-1 inline"
@@ -75,7 +78,7 @@ const NoEntryZomato = ({ collectData, loading, currentOrders }) => {
 
             {}
           </p>
-          {!loading && (
+          {/* {!loading && (
             <button
               className={`mt-4 bg-blue-500 text-white rounded px-3 py-1 ${
                 zomatoLoggedIn ? '' : 'opacity-50 cursor-not-allowed'
@@ -85,7 +88,7 @@ const NoEntryZomato = ({ collectData, loading, currentOrders }) => {
             >
               Show my Expense
             </button>
-          )}
+          )} */}
         </div>
       </div>
     </div>
