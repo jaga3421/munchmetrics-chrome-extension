@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import ProgressBar from './ProgressBar';
 import { ImSpinner8 } from "react-icons/im";
 
 
-const NoEntryZomato = ({ collectData, loading, currentOrders }) => {
+const NoEntryZomato = ({ onLoggedinZomato, loading, currentOrders }) => {
   const [zomatoLoggedIn, setZomatoLoggedIn] = useState(false);
   const [zomatoChecked, setZomatoChecked] = useState(false);
   const [totalOrders, setTotalOrders] = useState(0);
@@ -17,6 +16,7 @@ const NoEntryZomato = ({ collectData, loading, currentOrders }) => {
       console.log(data);
       if (data?.sections?.SECTION_USER_ORDER_HISTORY?.totalPages) {
         setZomatoLoggedIn(true);
+        onLoggedinZomato();
         setTotalOrders(data?.sections?.SECTION_USER_ORDER_HISTORY?.count);
         chrome.storage.local.set({
           zomatePages: data?.sections?.SECTION_USER_ORDER_HISTORY.totalPages,
@@ -40,15 +40,8 @@ const NoEntryZomato = ({ collectData, loading, currentOrders }) => {
           }}
         ></div>
         <div className="p-4 h-28 text-sm flex items-center relative">
-          <p className="text-gray-700">
-            {loading ? (
-              <>
-                <ProgressBar current={currentOrders} total={totalOrders} />
-                <span className="text-sm px-2">
-                  {currentOrders}/{totalOrders}{' '}
-                </span>
-              </>
-            ) : !zomatoChecked ? (
+          <div className="text-gray-700">
+            {!zomatoChecked ? (
               <div className='flex flex-row space-x-2 items-center'>
                   <ImSpinner8 className='animate-spin mr-2 text-red-600' />Checking Login status
               </div>
@@ -61,7 +54,7 @@ const NoEntryZomato = ({ collectData, loading, currentOrders }) => {
                   </div>
                 ) : (
                   <div className="block">
-                    Please{' '}
+                    Please
                     <a
                       href="https://www.zomato.com/login"
                       target="_blank"
@@ -69,15 +62,15 @@ const NoEntryZomato = ({ collectData, loading, currentOrders }) => {
                       className="text-blue-500 underline px-1 inline"
                     >
                       Login
-                    </a>{' '}
-                    to Zomato to get your stats
+                    </a>
+                    to Zomato
                   </div>
                 )}
               </>
             )}
 
             {}
-          </p>
+          </div>
           {/* {!loading && (
             <button
               className={`mt-4 bg-blue-500 text-white rounded px-3 py-1 ${

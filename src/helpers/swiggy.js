@@ -17,6 +17,7 @@ function groupByYears(arr) {
       yearObject[year] = [order];
     }
   });
+
   let sortedKeys = Object.keys(yearObject).sort((a, b) => b.localeCompare(a));
   // Create a new object with sorted key-value pairs
   let sortedObject = {};
@@ -28,18 +29,20 @@ function groupByYears(arr) {
 }
 
 function generateYearlyReview(yearSummary) {
+
   const totalOrders = yearSummary.length;
 
   // Total cost spent
   const totalCost = yearSummary.reduce((acc, order) => {
-    const cost = parseFloat(order.totalCost.replace('₹', ''));
+    const cost = order.order_total
     return acc + cost;
   }, 0);
+
 
   // Most expensive order
   const mostExpensiveOrder = yearSummary.reduce(
     (maxOrder, order) => {
-      const cost = parseFloat(order.totalCost.replace('₹', ''));
+      const cost = order.order_total;
       return cost > maxOrder.cost ? { order, cost } : maxOrder;
     },
     { order: null, cost: 0 }
@@ -48,7 +51,7 @@ function generateYearlyReview(yearSummary) {
   // Least expensive order
   const leastExpensiveOrder = yearSummary.reduce(
     (minOrder, order) => {
-      const cost = parseFloat(order.totalCost.replace('₹', ''));
+      const cost = order.order_total;
       return cost < minOrder.cost || minOrder.cost === 0
         ? { order, cost }
         : minOrder;
@@ -62,7 +65,7 @@ function generateYearlyReview(yearSummary) {
   // Top dishes
   const dishFrequency = yearSummary.reduce((acc, order) => {
     order.dishes.forEach((dish) => {
-      if (!!dish && dish.trim() != '' && dish != null)
+      if (!!dish && dish.trim() !== '' && dish != null)
         acc[dish] = (acc[dish] || 0) + 1;
     });
     return acc;
@@ -73,47 +76,38 @@ function generateYearlyReview(yearSummary) {
     .slice(0, 10)
     .map(([name, count]) => ({ name, count }));
 
+
   // Top restaurants
   const restaurantFrequency = yearSummary.reduce((acc, order) => {
-    const restaurantId = order.resInfo.id;
+    const restaurantId = order.restaurant_name;
     acc[restaurantId] = (acc[restaurantId] || 0) + 1;
     return acc;
   }, {});
-  const topRestaurants = Object.entries(restaurantFrequency)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 10)
-    .map(([id, count]) => ({
-      resInfo: yearSummary.find((order) => order.resInfo.id === parseInt(id))
-        .resInfo,
-      count,
-    }));
+  
+  const topRestaurants = Object.entries(restaurantFrequency).sort((a, b) => b[1] - a[1]).slice(0, 10);
 
   // count of unique resInfo based on resInfo.id
   const uniqueRestaurants = new Set(
-    yearSummary.map((order) => order.resInfo.id)
+    yearSummary.map((order) => order.restaurant_name)
   ).size;
 
   // Top cities
   const cityFrequency = yearSummary.reduce((acc, order) => {
-    const cityName = getCityName(order.resInfo.locality.localityName);
+    const cityName = order.restaurant_city_name;
     acc[cityName] = (acc[cityName] || 0) + 1;
     return acc;
   }, {});
+
   const topCities = Object.entries(cityFrequency)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 10)
-    .map(([name, count]) => ({ name, count }));
 
   // All cities
   const allCities = Array.from(
-    new Set(yearSummary.map((order) => getCityName(order.resInfo.locality.localityName)))
+    new Set(yearSummary.map((order) => order.restaurant_city_name))
   );
 
-  // All years
 
-  const allYears = Array.from(
-    new Set(yearSummary.map((order) => Number(order.orderDate.year)))
-  ).sort((a, b) => b - a);
 
   const getTop10TimeSlots = (orderArray) => {
     const timeSlotCount = {};
@@ -147,18 +141,13 @@ function generateYearlyReview(yearSummary) {
     top_restaurants: topRestaurants,
     top_cities: topCities,
     all_cities: allCities,
-    all_years: allYears,
     total_restaurants: uniqueRestaurants,
     top_10_time: top10Time,
   };
 
   console.log(analytics)
-  return analytics;
-}
 
-function getCityName(name) {
-  let split = name.split(', ');
-  return split.length == 1 ? name : split[split.length - 1]
+  return analytics;
 }
 
 function groupOrdersByMonth(yearSummary) {

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { ImSpinner8 } from "react-icons/im";
 
-const NoEntrySwiggy = ({ loading }) => {
+const NoEntrySwiggy = ({ onLoggedinSwiggy }) => {
+  
   const [swiggyLoggedIn, setSwiggyLoggedIn] = useState(false);
   const [swiggyChecked, setSwiggyChecked] = useState(false);
 
@@ -9,14 +10,15 @@ const NoEntrySwiggy = ({ loading }) => {
   useEffect(() => {
     const checkSwiggyLogin = async () => {
       const swiggyData = await fetch(
-        'https://www.swiggy.com/dapi/order/all?order_id'
+        'https://www.swiggy.com/dapi/order/all?order_id='
       );
-      const data = await swiggyData.json();
-      console.log(data);
-      if (data.statusCode === 0) {
+      const { statusCode} = await swiggyData.json();
+      if (statusCode === 0) {
         setSwiggyLoggedIn(true);
+        onLoggedinSwiggy();
       }
       setSwiggyChecked(true);
+      
     };
     checkSwiggyLogin();
   }, []);
@@ -34,10 +36,8 @@ const NoEntrySwiggy = ({ loading }) => {
           }}
         ></div>
         <div className="p-4 h-28 text-sm flex items-center relative">
-          <p className="text-gray-700">
-            {loading ? (
-              'loading'
-            ) : !swiggyChecked ? (
+          <div className="text-gray-700">
+            {!swiggyChecked ? (
               <div className='flex flex-row space-x-2 items-center'>
                   <ImSpinner8 className='animate-spin mr-2 text-orange-600' />Checking Login status
               </div>
@@ -50,7 +50,7 @@ const NoEntrySwiggy = ({ loading }) => {
                   </div>
                 ) : (
                   <div className="block">
-                    Please{' '}
+                    Please 
                     <a
                       href="https://www.swiggy.com/auth"
                       target="_blank"
@@ -58,15 +58,15 @@ const NoEntrySwiggy = ({ loading }) => {
                       className="text-blue-500 underline px-1 inline"
                     >
                       Login
-                    </a>{' '}
-                    to Swiggy to get your expenses
+                    </a>
+                    to Swiggy
                   </div>
                 )}
               </>
             )}
 
             {}
-          </p>
+          </div>
          
         </div>
       </div>

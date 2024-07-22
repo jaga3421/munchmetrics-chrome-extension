@@ -1,9 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import useZomatoScrapper from '../hooks/useZomatoScrapper';
+import useSwiggyScrapper from '../hooks/useSwiggyScrapper';
 import { generateYearlyReview, groupByYears } from '../helpers/zomato';
+import { generateYearlyReview as generateSwiggyReview } from '../helpers/swiggy';
 import NoEntryZomato from './NoEntryZomato';
 import NoEntrySwiggy from './NoEntrySwiggy';
 import { formatINR } from '../helpers/formatINR';
+
+function getUniqueValues(array) {
+  return [...new Set(array)];
+}
 
 function AppCard() {
   const {
@@ -15,11 +21,44 @@ function AppCard() {
     loading,
     error,
   } = useZomatoScrapper();
+
+  const {
+    getYearSummarySwiggy,
+    totalOrdersSwiggy,
+  } = useSwiggyScrapper();
   const [yearlyReview, setYearlyReview] = useState({});
+  const [swiggyReview, setSwiggyReview] = useState({});
 
   const [allYearObject, setAllYearObject] = useState([]);
 
-  const collectData = () => {
+  const [showNextPage, setShowNextPage] = useState(false);
+
+  
+
+  useEffect(() => {
+    if (!loading && !error && yearSummary.length > 0) {
+      const ordersByYear = groupByYears(yearSummary);
+      const review = generateYearlyReview(yearSummary);
+      setAllYearObject(ordersByYear);
+      
+
+      setYearlyReview(review);
+      chrome.storage.local.set({ zomato: yearSummary });
+    }
+  }, [error, loading, yearSummary]);
+
+
+
+  useEffect(()=>{
+    if(swiggyReview.total_orders && yearlyReview.total_orders) {
+      setShowNextPage(true)
+    }
+  },[swiggyReview, yearlyReview])
+
+
+  // methods
+
+  const collectDataZomato = () => {
     setYearlyReview({});
     setYearSummary([]);
     getYearSummary();
@@ -32,8 +71,13 @@ function AppCard() {
     } else {
       setYearlyReview(generateYearlyReview(allYearObject[year]));
     }
-    console.log();
   };
+
+  const onAppSelect = ( e) => {
+    const app = e.target.value;
+    if(app === 'all')  onSelectAll();
+    console.log(app)
+  }
 
   const openOptions = () => {
     chrome.tabs.create({
@@ -41,42 +85,61 @@ function AppCard() {
     });
   };
 
-  useEffect(() => {
-    chrome.storage.local.get(['zomato'], function (result) {
-      if (result['zomato']) {
-        setYearSummary(result['zomato']);
-      }
-    });
-  }, []);
+  const onLoggedinZomato = () => {
+    collectDataZomato();
+    
+  }
 
-  useEffect(() => {
-    if (!loading && !error && yearSummary.length > 0) {
-      const ordersByYear = groupByYears(yearSummary);
-      const review = generateYearlyReview(yearSummary);
-      setAllYearObject(ordersByYear);
-      console.log(ordersByYear);
+  const onLoggedinSwiggy = async () => {
+    const yearSummarySwiggy = await getYearSummarySwiggy();
+    setSwiggyReview(generateSwiggyReview(yearSummarySwiggy))
+  }
+  
+  const showExpenseCTA = () => {
+    setShowNextPage(true);
+    onSelectAll();
+  }
 
-      setYearlyReview(review);
-      chrome.storage.local.set({ zomato: yearSummary });
-    }
-  }, [error, loading, yearSummary]);
+  const onSelectAll = () => {
+    const zomato = generateYearlyReview(allYearObject['2024']);
+    const swiggy = {...swiggyReview};
 
-  if (!Object.keys(yearlyReview).length)
+    setYearlyReview({
+      all_cities : getUniqueValues([...zomato.all_cities, ...swiggy.all_cities]),
+      total_cost_spent: Number(zomato.total_cost_spent) + Number(swiggy.total_cost_spent),
+      total_orders: Number(zomato.total_orders) + Number(swiggy.total_orders),
+      top_dishes: getUniqueValues([...zomato.top_dishes, ...swiggy.top_dishes]),
+      top_restaurants: getUniqueValues([...zomato.top_restaurants, ...swiggy.top_restaurants]),
+    })
+
+  }
+
+  
+  if (!showNextPage)
     return (
-      <div className='flex flex-row space-x-2'>
-        <NoEntryZomato
-          collectData={collectData}
-          loading={loading}
-          totalOrders={totalOrders}
-          currentOrders={currentPage}
-        />
-        <NoEntrySwiggy 
-          collectData={collectData}
-          loading={loading}
-          totalOrders={totalOrders}
-          currentOrders={currentPage}
-        />
-      </div>
+      <>
+        <div className='flex flex-row space-x-2'>
+          <NoEntryZomato
+            onLoggedinZomato={onLoggedinZomato}
+            loading={loading}
+            totalOrders={totalOrders}
+            currentOrders={currentPage}
+            />
+          <NoEntrySwiggy 
+            onLoggedinSwiggy={onLoggedinSwiggy}
+            loading={loading}
+            totalOrders={totalOrders}
+            currentOrders={currentPage}
+            />
+        </div>
+        <div className='mt-6'>
+          <div>Zomato orders processes: {currentPage}</div>
+          <div>Swiggy orders processed: {totalOrdersSwiggy}</div>
+
+          <button className='p-1 bg-blue-500 text-white rounded' onClick={showExpenseCTA}>Show My Expenses</button>
+
+        </div>
+      </>
     );
 
   if (error) {
@@ -102,12 +165,12 @@ function AppCard() {
           ))}
         </select>
         <select
-          onChange={onYearSelect}
+          onChange={onAppSelect}
           className="p-1 px-4 mt-2 border border-gray-200 text-red-400 bg-white"
-          disabled={true}
+
         >
+          <option value={'all'} defaultValue={true}>Swiggy & Zomato</option>
           <option value={'zomato'}>Zomato</option>
-          <option value={'all'}>All Apps</option>
           <option value={'swiggy'}>Swiggy</option>
         </select>
       </div>
@@ -117,7 +180,7 @@ function AppCard() {
       <h4 className="font-semibold text-center text-6xl text-red-500 mb-2">
         {formatINR(yearlyReview?.total_cost_spent)}
       </h4>
-      <div className="text-xs text-center text-gray-400 mb-8">in Zomato</div>
+      <div className="text-xs text-center text-gray-400 mb-8">in Zomato & Swiggy</div>
       <div className="flex flex-row space-x-2 mb-4">
         <div className="flex-1 p-4 border border-gray-200 rounded-xl overflow-hidden bg-white">
           <div className="text-2xl">{yearlyReview?.total_orders}</div>
@@ -125,9 +188,9 @@ function AppCard() {
         </div>
 
         <div className="flex-1 p-4 border border-gray-200 rounded-xl overflow-hidden bg-white">
-          <div className="text-2xl">{yearlyReview.total_restaurants}</div>
+          <div className="text-2xl">{yearlyReview.all_cities.length}</div>
           <span className="text-md text-gray-500">
-            Restaurants you enjoyed{' '}
+            Cities you ordered from{' '}
           </span>
         </div>
       </div>
