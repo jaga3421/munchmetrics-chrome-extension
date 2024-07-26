@@ -89,7 +89,7 @@ function AppCard() {
     collectDataZomato();
     
   }
-
+// testng
   const onLoggedinSwiggy = async () => {
     const yearSummarySwiggy = await getYearSummarySwiggy();
     setSwiggyReview(generateSwiggyReview(yearSummarySwiggy))
