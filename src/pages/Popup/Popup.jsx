@@ -30,10 +30,10 @@ const Popup = () => {
     >
       <header
         ref={headerRef}
-        className="p-2 py-4 sticky top-0 z-10 bg-blue-400 text-white shadow"
+        className="p-2 sticky top-0 z-10 bg-gray-600 text-gray-100"
       >
-        <h4 className="text-lg">
-          <span className="font-bold">MUNCH</span>METRICS
+        <h4 className="text-base text-center p-2">
+          Track your Swiggy & Zomato expense
         </h4>
       </header>
       <main className="p-2">

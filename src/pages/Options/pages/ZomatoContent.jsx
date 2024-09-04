@@ -12,7 +12,7 @@ import {
 import CardHolder from '../components/CardHolder';
 import HourChart from '../components/HourChart';
 
-function MainContent() {
+function ZomatoContent() {
   const [currentYear, setCurrentYear] = useState(0);
   const [currentYearReview, setCurrentYearReview] = useState({});
   const [currentMonthWise, setCurrentMonthWise] = useState({});
@@ -46,7 +46,6 @@ function MainContent() {
       setCurrentYearReview(
         generateYearlyReview(Object.values(allYearObject).flat())
       );
-      console.log(generateYearlyReview(Object.values(allYearObject).flat()));
     });
   }, []);
 
@@ -54,7 +53,7 @@ function MainContent() {
     return (
       <>
         <div className="w-screen h-screen flex justify-center items-center">
-          Please wait
+          Please Login to Zomato and click the MunchMetrics icon in your chrome extension to get your insights
         </div>
       </>
     );
@@ -67,7 +66,7 @@ function MainContent() {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="title">Insights {currentYear}</h1>
+        <h1 className="title">Insights Zomato ({currentYear})</h1>
         <div className="ml-auto flex space-x-2 text-xs">
           <select
             onChange={selectYear}
@@ -81,14 +80,6 @@ function MainContent() {
                   {year}
                 </option>
               ))}
-          </select>
-          <select
-            className="p-1 bg-gray-200 border border-gray-300 rounded cursor-not-allowed"
-            disabled={true}
-          >
-            <option value={'zomato'}>Zomato</option>
-            <option value={'all'}>All Apps</option>
-            <option value={'swiggy'}>Swiggy</option>
           </select>
         </div>
       </motion.nav>
@@ -118,4 +109,4 @@ function MainContent() {
   );
 }
 
-export default MainContent;
+export default ZomatoContent;

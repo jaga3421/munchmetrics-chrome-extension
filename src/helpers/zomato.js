@@ -28,16 +28,16 @@ function groupByYears(arr) {
 }
 
 function generateYearlyReview(yearSummary) {
-  const totalOrders = yearSummary.length;
+  const totalOrders = yearSummary?.length;
 
   // Total cost spent
-  const totalCost = yearSummary.reduce((acc, order) => {
+  const totalCost = yearSummary?.reduce((acc, order) => {
     const cost = parseFloat(order.totalCost.replace('₹', ''));
     return acc + cost;
   }, 0);
 
   // Most expensive order
-  const mostExpensiveOrder = yearSummary.reduce(
+  const mostExpensiveOrder = yearSummary?.reduce(
     (maxOrder, order) => {
       const cost = parseFloat(order.totalCost.replace('₹', ''));
       return cost > maxOrder.cost ? { order, cost } : maxOrder;
@@ -139,7 +139,7 @@ function generateYearlyReview(yearSummary) {
   // Construct the analytics object
   const analytics = {
     total_orders: totalOrders,
-    total_cost_spent: totalCost.toFixed(2),
+    total_cost_spent: Number(totalCost.toFixed(2)),
     most_expensive_order: mostExpensiveOrder,
     least_expensive_order: leastExpensiveOrder,
     average_order_cost: averageOrderCost,

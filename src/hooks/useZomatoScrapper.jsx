@@ -100,13 +100,13 @@ const useZomatoScrapper = () => {
   }
 
   return {
-    yearSummary,
-    getYearSummary,
-    setYearSummary,
-    currentPage,
-    totalOrders,
-    loading,
-    error,
+    zomatoYearSummary: yearSummary,
+    getZomatoYearSummary: getYearSummary,
+    setZomatoYearSummary: setYearSummary,
+    zomatoCurrentPage: currentPage,
+    zomatoTotalOrders: totalOrders,
+    zomatoLoading: loading,
+    zomatoError: error
   };
 };
 

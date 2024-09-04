@@ -67,8 +67,8 @@ const useSwiggyScrapper = () => {
     setYearSummarySwiggy,
     currentPage,
     totalOrdersSwiggy,
-    loading,
-    error,
+    swiggyLoading: loading,
+    swiggyError: error,
   };
 };
 

@@ -2,10 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { ImSpinner8 } from "react-icons/im";
 
 
-const NoEntryZomato = ({ onLoggedinZomato, loading, currentOrders }) => {
+const ZomatoLoginCard = ({ onLoggedinZomato }) => {
   const [zomatoLoggedIn, setZomatoLoggedIn] = useState(false);
   const [zomatoChecked, setZomatoChecked] = useState(false);
-  const [totalOrders, setTotalOrders] = useState(0);
 
   useEffect(() => {
     const checkZomatoLogin = async () => {
@@ -14,17 +13,18 @@ const NoEntryZomato = ({ onLoggedinZomato, loading, currentOrders }) => {
       );
       const data = await zomatoData.json();
       console.log(data);
+
       if (data?.sections?.SECTION_USER_ORDER_HISTORY?.totalPages) {
         setZomatoLoggedIn(true);
-        onLoggedinZomato();
-        setTotalOrders(data?.sections?.SECTION_USER_ORDER_HISTORY?.count);
         chrome.storage.local.set({
-          zomatePages: data?.sections?.SECTION_USER_ORDER_HISTORY.totalPages,
+          zomatePages: data?.sections?.SECTION_USER_ORDER_HISTORY?.totalPages,
         });
+        onLoggedinZomato();
       }
-      setZomatoChecked(true);
+      setZomatoChecked(true);    
     };
     checkZomatoLogin();
+ 
   }, []);
 
   return (
@@ -71,21 +71,11 @@ const NoEntryZomato = ({ onLoggedinZomato, loading, currentOrders }) => {
 
             {}
           </div>
-          {/* {!loading && (
-            <button
-              className={`mt-4 bg-blue-500 text-white rounded px-3 py-1 ${
-                zomatoLoggedIn ? '' : 'opacity-50 cursor-not-allowed'
-              }`}
-              disabled={!zomatoLoggedIn}
-              onClick={collectData}
-            >
-              Show my Expense
-            </button>
-          )} */}
+        
         </div>
       </div>
     </div>
   );
 };
 
-export default NoEntryZomato;
+export default ZomatoLoginCard;

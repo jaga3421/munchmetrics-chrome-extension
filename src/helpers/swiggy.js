@@ -30,7 +30,8 @@ function groupByYears(arr) {
 
 function generateYearlyReview(yearSummary) {
 
-  const totalOrders = yearSummary.length;
+  const totalOrders = yearSummary?.length;
+  if(!totalOrders) return;
 
   // Total cost spent
   const totalCost = yearSummary.reduce((acc, order) => {
@@ -133,7 +134,7 @@ function generateYearlyReview(yearSummary) {
   // Construct the analytics object
   const analytics = {
     total_orders: totalOrders,
-    total_cost_spent: totalCost.toFixed(2),
+    total_cost_spent: Number(totalCost.toFixed(2)),
     most_expensive_order: mostExpensiveOrder,
     least_expensive_order: leastExpensiveOrder,
     average_order_cost: averageOrderCost,

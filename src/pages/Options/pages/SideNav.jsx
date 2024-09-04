@@ -2,6 +2,25 @@ import { motion } from 'framer-motion';
 import React from 'react';
 import { FaChartArea } from 'react-icons/fa';
 import { CiCalendarDate } from 'react-icons/ci';
+import { NavLink } from 'react-router-dom';
+
+const navLinks = [
+  {
+    path: '/',
+    label: 'Zomato',
+    icon: <FaChartArea className="text-gray-800" />,
+  },
+  {
+    path: '/swiggy',
+    label: 'Swiggy',
+    icon: <FaChartArea className="text-gray-800" />,
+  },
+  {
+    path: '/year-review',
+    label: 'Year Review',
+    icon: <CiCalendarDate className="text-gray-800" />,
+  },
+];
 
 function SideNav() {
   return (
@@ -13,31 +32,31 @@ function SideNav() {
     >
       {/* Logo */}
       <div className="main-logo py-2 mb-6">
-        <div className="text-2xl text-gray-200 text-center ">
+        <div className="text-2xl text-gray-200 text-center">
           <span className="font-bold">Munch</span>
           <span className="uppercase">Metrics</span>
         </div>
       </div>
 
       <div className="sideNav">
-        <div className="flex flex-row space-x-4 items-center group p-2 my-2 bg-gray-800 rounded cursor-pointer">
-          <span className="p-1 bg-gray-100 group-hover:bg-gray-300 rounded">
-            <FaChartArea className="text-gray-800" />
-          </span>
-          <span className="font-semibold uppercase text-sm">Insights</span>
-        </div>
-        <div className="flex flex-row space-x-4 items-center group p-2 my-2 hover:bg-gray-800 rounded  cursor-not-allowed">
-          <span className="p-1 bg-gray-100 group-hover:bg-gray-300 rounded">
-            <CiCalendarDate className="text-gray-800" />
-          </span>
-          <span className="font-semibold uppercase text-sm">
-            Year Review
-            <br />
-            <span className=" text-gray-400 ml-1" style={{ fontSize: '6px' }}>
-              Coming Soon
+        {navLinks.map((link, index) => (
+          <NavLink
+            key={index}
+            to={link.path}
+            className={({ isActive }) =>
+              `flex flex-row space-x-4 items-center group p-2 my-2 rounded cursor-pointer ${
+                isActive ? 'bg-gray-800' : 'bg-gray-900'
+              }`
+            }
+          >
+            <span className="p-1 bg-gray-100 group-hover:bg-gray-300 rounded">
+              {link.icon}
             </span>
-          </span>
-        </div>
+            <span className="font-semibold uppercase text-sm">
+              {link.label}
+            </span>
+          </NavLink>
+        ))}
       </div>
     </motion.div>
   );

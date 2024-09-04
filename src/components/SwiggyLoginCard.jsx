@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ImSpinner8 } from "react-icons/im";
 
-const NoEntrySwiggy = ({ onLoggedinSwiggy }) => {
+const SwiggyLoginCard = ({ onLoggedinSwiggy }) => {
   
   const [swiggyLoggedIn, setSwiggyLoggedIn] = useState(false);
   const [swiggyChecked, setSwiggyChecked] = useState(false);
@@ -74,4 +74,4 @@ const NoEntrySwiggy = ({ onLoggedinSwiggy }) => {
   );
 };
 
-export default NoEntrySwiggy;
+export default SwiggyLoginCard;
