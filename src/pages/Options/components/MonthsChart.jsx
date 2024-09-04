@@ -33,7 +33,8 @@ function MonthsChart({ monthWise, currentYear }) {
   const getTotalCost = (monthly) => {
     let total = 0;
     monthly.forEach((orders) => {
-      total += parseFloat(orders.totalCost.replace('₹', ''));
+      if(orders.order_total) total+= orders.order_total
+      else total += parseFloat(orders.totalCost.replace('₹', ''));
     });
     return total;
   };

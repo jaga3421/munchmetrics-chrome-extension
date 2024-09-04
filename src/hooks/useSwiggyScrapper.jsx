@@ -51,13 +51,16 @@ const useSwiggyScrapper = () => {
 
 
   function processOrderDate(orderDate) {
-    let onlyDate = orderDate.split(' ');
-    const date = new Date(onlyDate[0]);
+    const [datePart, timePart] = orderDate.split(' ');
+    
+    const date = new Date(`${datePart}T${timePart}`);
     const year = date.getFullYear();
     const month = date.getMonth() + 1; // JavaScript months are 0-11
     const day = date.getDate();
-    const timeSlot = date.getHours(); // 24-hour format
-  
+    const hour = date.getHours(); // 24-hour format
+
+    const timeSlot = Math.floor(hour); 
+
     return { year, month, day, timeSlot };
   }
 

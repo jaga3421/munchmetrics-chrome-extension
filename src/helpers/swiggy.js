@@ -158,13 +158,8 @@ function groupOrdersByMonth(yearSummary) {
   // Process each order in the yearSummary
   yearSummary.forEach((order) => {
     // Extract month from the orderDate
-    let month;
-    if (typeof order.orderDate === 'string') {
-      const orderDate = new Date(order.orderDate.replace(' at', ''));
-      month = orderDate.getMonth();
-    } else {
-      month = order.orderDate.month - 1;
-    }
+    let month = order.orderDate.month - 1;
+    
 
     // Push the order to the corresponding month
     monthlyOrders[month].push(order);

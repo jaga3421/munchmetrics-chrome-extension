@@ -16,18 +16,9 @@ function SwiggyContent() {
   const [currentYear, setCurrentYear] = useState(0);
   const [currentYearReview, setCurrentYearReview] = useState({});
   const [currentMonthWise, setCurrentMonthWise] = useState({});
-  const [allYears, setAllYears] = useState({});
+  
 
-  const selectYear = () => {
-    const years = allYears['2024'];
-    setCurrentYearReview(generateYearlyReview(years));
-
-
-    setCurrentMonthWise(groupOrdersByMonth(years));
-
-    setCurrentYear('2024');
-  };
-
+ 
   const convertTimeSlot = (timeSlots) => {
     const a = timeSlots.map((slot) => {
       return { hour: readifyTimeSlot(slot.hour), count: slot.count };
@@ -37,14 +28,14 @@ function SwiggyContent() {
 
   useEffect(() => {
     chrome.storage.local.get(['swiggy'], function (result) {
-      const allYearObject = groupByYears(result.swiggy);
-      console.log('swigg',allYearObject)
-      setAllYears(allYearObject);
+      console.log(result.swiggy)
+
+      const swiggyOrders = groupByYears(result.swiggy);
       setCurrentYear('2024');
       setCurrentYearReview(
-        generateYearlyReview(Object.values(allYearObject).flat())
+        generateYearlyReview(Object.values(swiggyOrders).flat())
       );
-      console.log(generateYearlyReview(Object.values(allYearObject).flat()));
+      setCurrentMonthWise(groupOrdersByMonth(swiggyOrders['2024']));
     });
   }, []);
 
@@ -58,9 +49,9 @@ function SwiggyContent() {
     );
 
   return (
-    <div className="w-full  bg-orange-300 h-full overflow-hidden">
+    <div className="w-full  bg-greu-300 h-full overflow-hidden">
       <motion.nav
-        className="p-4 flex flex-row space-around sticky top-0 shadow-sm bg-orange-300"
+        className="p-4 flex flex-row space-around sticky top-0 shadow-sm bg-grey-500"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}

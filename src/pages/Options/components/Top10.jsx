@@ -32,7 +32,10 @@ const Top10Tabs = ({ food, places }) => {
   };
 
   const foodList = food.map((a) => `${a.name} : (${a.count})`);
-  const placesList = places.map((a) => `${a.resInfo?.name} : (${a.count})`);
+  const placesList = places.map((a) => {
+    if(a.resInfo) return `${a.resInfo?.name} : (${a.count})`;
+    return `${a[0]} : (${a[1]})`
+  });
 
   return (
     <motion.div
