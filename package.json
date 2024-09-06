@@ -1,6 +1,6 @@
 {
   "name": "munchmetrics-chrome-extension",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Chrome extension for the app MunchMetrics",
   "license": "MIT",
   "repository": {
@@ -15,6 +15,7 @@
     "start": "concurrently \"npm run watch:css\" \"npm run dev\""
   },
   "dependencies": {
+    "@fontsource/inter": "^5.0.20",
     "@heroicons/react": "^2.1.1",
     "@react-google-maps/api": "^2.19.2",
     "axios": "^1.6.2",

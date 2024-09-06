@@ -29,12 +29,12 @@ const TwoCards = ({
             (
               <div className='my-12 text-center'>
                 {
-                  totalOrdersZomato ?
+                  true ?
                   <div className='flex items-center space-x-2 justify-center'><span >Zomato orders processed (Lifetime):</span>{!totalOrdersZomato || zomatoLoading ? <ImSpinner8 className='inline-block ml-[5px] animate-spin text-red-600' /> : totalOrdersZomato}</div> : 
                   ''
                 }
                  {
-                  totalOrdersSwiggy ?
+                  true ?
                   <div>Swiggy orders processed (2024): {SwiggyLoading ? 'Calculating...' : totalOrdersSwiggy}</div>  : ''
                 }
                 
