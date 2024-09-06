@@ -2,6 +2,9 @@
 export const content = ['./src/**/*.{html,js,jsx,tsx}'];
 export const theme = {
   extend: {
+    fontFamily: {
+      sans: ['Inter', 'sans-serif'],
+    },
     colors: {
       zomato: {
         DEFAULT: '#E03546',

@@ -25,7 +25,9 @@ const useSwiggyScrapper = () => {
           ...item,
           dishes: item.order_items.map(dish=>dish.name),
           orderDate: processOrderDate(item.payment_txn_created_on)
-        }))
+        })).filter(
+          item => item.orderDate
+        )
         setTotalOrdersSwiggy(accumulatedOrders.length + processedOrders.length);
         accumulatedOrders.push(...processedOrders);
         const lastOrderId = processedOrders[processedOrders.length - 1]?.order_id;
@@ -51,7 +53,7 @@ const useSwiggyScrapper = () => {
 
 
   function processOrderDate(orderDate) {
-    const [datePart, timePart] = orderDate.split(' ');
+    const [datePart, timePart] = orderDate?.split(' ');
     
     const date = new Date(`${datePart}T${timePart}`);
     const year = date.getFullYear();
@@ -63,6 +65,8 @@ const useSwiggyScrapper = () => {
 
     return { year, month, day, timeSlot };
   }
+
+  console.log(totalOrdersSwiggy)
 
   return {
     yearSummarySwiggy,
