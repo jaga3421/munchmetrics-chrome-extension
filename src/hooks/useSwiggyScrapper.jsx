@@ -24,7 +24,7 @@ const useSwiggyScrapper = () => {
         processedOrders = processedOrders.map(item => ({
           ...item,
           dishes: item.order_items.map(dish=>dish.name),
-          orderDate: processOrderDate(item.payment_txn_created_on)
+          orderDate: processOrderDate(item.order_time)
         })).filter(
           item => item.orderDate
         )
