@@ -39,11 +39,11 @@ function AppCard() {
       chrome.storage.local.set({ zomato: zomatoYearSummary }, function() {
         console.log('Zomato data has been saved.');
       });
-      let summary = swiggyReview.total_cost_spent ? groupByYears(zomatoYearSummary)['2024'] : zomatoYearSummary
+      let summary = swiggyReview?.total_cost_spent ? groupByYears(zomatoYearSummary)['2024'] : zomatoYearSummary
       const zomatoData = generateZomatoReview(summary);
       setZomatoReview(zomatoData);
     }
-  }, [swiggyReview.total_cost_spent, zomatoError, zomatoLoading, zomatoYearSummary]);
+  }, [swiggyReview?.total_cost_spent, zomatoError, zomatoLoading, zomatoYearSummary]);
 
 
   // methods
