@@ -690,6 +690,22 @@ html,
   top: -0.75rem;
 }
 
+.-bottom-28{
+  bottom: -7rem;
+}
+
+.-left-20{
+  left: -5rem;
+}
+
+.-right-24{
+  right: -6rem;
+}
+
+.-top-24{
+  top: -6rem;
+}
+
 .z-0{
   z-index: 0;
 }
@@ -972,8 +988,20 @@ html,
   height: 18px;
 }
 
+.h-64{
+  height: 16rem;
+}
+
+.h-72{
+  height: 18rem;
+}
+
 .max-h-full{
   max-height: 100%;
+}
+
+.max-h-\[calc\(100vh-3rem\)\]{
+  max-height: calc(100vh - 3rem);
 }
 
 .min-h-\[180px\]{
@@ -1076,6 +1104,14 @@ html,
   width: 18px;
 }
 
+.w-64{
+  width: 16rem;
+}
+
+.w-72{
+  width: 18rem;
+}
+
 .max-w-4xl{
   max-width: 56rem;
 }
@@ -1098,6 +1134,10 @@ html,
 
 .max-w-2xl{
   max-width: 42rem;
+}
+
+.max-w-\[560px\]{
+  max-width: 560px;
 }
 
 .flex-1{
@@ -1282,6 +1322,10 @@ html,
 
 .overflow-hidden{
   overflow: hidden;
+}
+
+.overflow-y-auto{
+  overflow-y: auto;
 }
 
 .overflow-x-hidden{
@@ -2344,6 +2388,10 @@ html,
 
   .sm\:items-center{
     align-items: center;
+  }
+
+  .sm\:p-6{
+    padding: 1.5rem;
   }
 
   .sm\:px-10{
