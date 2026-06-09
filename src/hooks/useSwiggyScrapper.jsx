@@ -23,9 +23,13 @@ const useSwiggyScrapper = () => {
       if (processedOrders.length) {
         processedOrders = processedOrders.map(item => ({
           ...item,
-          dishes: item.order_items.map(dish=>dish.name),
-          orderDate: processOrderDate(item.payment_txn_created_on)
-        }))
+          dishes: (item.order_items || []).map(dish => dish.name),
+          orderDate: processOrderDate(
+            item.payment_txn_created_on ||
+              item.order_placement_status_updated_at ||
+              item.order_time
+          ),
+        })).filter(item => item.orderDate)
         setTotalOrdersSwiggy(accumulatedOrders.length + processedOrders.length);
         accumulatedOrders.push(...processedOrders);
         const lastOrderId = processedOrders[processedOrders.length - 1]?.order_id;
@@ -51,17 +55,23 @@ const useSwiggyScrapper = () => {
 
 
   function processOrderDate(orderDate) {
-    const [datePart, timePart] = orderDate.split(' ');
-    
-    const date = new Date(`${datePart}T${timePart}`);
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1; // JavaScript months are 0-11
-    const day = date.getDate();
-    const hour = date.getHours(); // 24-hour format
+    if (!orderDate || typeof orderDate !== 'string') return null;
 
-    const timeSlot = Math.floor(hour); 
+    let date;
+    if (orderDate.includes(' ')) {
+      const [datePart, timePart] = orderDate.split(' ');
+      date = new Date(`${datePart}T${timePart}`);
+    } else {
+      date = new Date(orderDate);
+    }
+    if (isNaN(date.getTime())) return null;
 
-    return { year, month, day, timeSlot };
+    return {
+      year: date.getFullYear(),
+      month: date.getMonth() + 1,
+      day: date.getDate(),
+      timeSlot: date.getHours(),
+    };
   }
 
   return {

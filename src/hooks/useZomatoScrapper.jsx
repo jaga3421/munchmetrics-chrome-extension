@@ -6,97 +6,97 @@ const useZomatoScrapper = () => {
   const [totalOrders, setTotalOrders] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  let summary = [];
 
   const fetchData = async (pageNumber, track) => {
     try {
-      setLoading(true);
       const response = await fetch(
         `https://www.zomato.com/webroutes/user/orders?page=${pageNumber}`
       );
       const data = await response.json();
-      // increment the page number
 
-      setTotalOrders(data.sections.SECTION_USER_ORDER_HISTORY.count);
-      if (track) {
+      if (data?.sections?.SECTION_USER_ORDER_HISTORY?.count !== undefined) {
+        setTotalOrders(data.sections.SECTION_USER_ORDER_HISTORY.count);
+      }
+      if (track && data?.entities?.ORDER) {
         setCurrentPage(
           (prev) => prev + Object.keys(data.entities.ORDER).length
         );
       }
       return data;
-    } catch (error) {
-      setLoading(false);
-      setError(error);
-      console.error(`Error fetching data for page ${pageNumber}:`, error);
-      throw error;
+    } catch (err) {
+      console.error(`Error fetching data for page ${pageNumber}:`, err);
+      throw err;
     }
   };
 
-  const getYearSummary = async () => {
-    chrome.storage.local.get('zomatePages', async function (res) {
-      const totalPages = res.zomatePages;
+  const getYearSummary = () =>
+    new Promise((resolve, reject) => {
+      setLoading(true);
+      setError(null);
+      chrome.storage.local.get('zomatePages', async (res) => {
+        const totalPages = res.zomatePages;
+        if (!totalPages) {
+          setLoading(false);
+          resolve([]);
+          return;
+        }
 
-      const pagesArray = Array.from(Array(totalPages).keys()).map(
-        (item) => item + 1
-      );
-      const promises = pagesArray.map((pageNumber) =>
-        fetchData(pageNumber, true)
-      );
-
-      try {
-        const results = await Promise.all(promises);
-
-        results.forEach((result) => {
-          const orders = result.entities.ORDER;
-          Object.keys(orders).forEach((orderId) => {
-            const Order = {
-              ...orders[orderId],
-              dishes: processDishString(orders[orderId].dishString),
-              orderDate: processOrderDate(orders[orderId].orderDate),
-            };
-            summary.push(Order);
+        const pagesArray = Array.from({ length: totalPages }, (_, i) => i + 1);
+        try {
+          const results = await Promise.all(
+            pagesArray.map((p) => fetchData(p, true))
+          );
+          const summary = [];
+          results.forEach((result) => {
+            const orders = result?.entities?.ORDER || {};
+            Object.keys(orders).forEach((orderId) => {
+              const order = orders[orderId];
+              try {
+                summary.push({
+                  ...order,
+                  dishes: processDishString(order.dishString || ''),
+                  orderDate: processOrderDate(order.orderDate),
+                });
+              } catch (e) {
+                // skip malformed
+              }
+            });
           });
-        });
-        setLoading(false);
-        setYearSummary(summary);
-
-        return summary;
-      } catch (error) {
-        console.error('Error in getYearSummary:', error);
-        setError(error);
-        throw error;
-      }
+          const cleaned = summary.filter((o) => o.orderDate);
+          setLoading(false);
+          setYearSummary(cleaned);
+          resolve(cleaned);
+        } catch (err) {
+          setLoading(false);
+          setError(err);
+          reject(err);
+        }
+      });
     });
-  };
 
   function processDishString(dishString) {
-    // Split the dishString by comma and trim spaces
+    if (!dishString || typeof dishString !== 'string') return [];
     const dishesArray = dishString.split(',').map((item) => item.trim());
-
-    // Map through the dishesArray and extract the dish name
     const dishNames = dishesArray.map((item) => {
       const parts = item.split('x');
-      const count = parseInt(parts[0].trim()) || 1; // Use 1 if the count is not provided or not a valid number
+      const count = parseInt(parts[0].trim()) || 1;
       const dishName = parts[1]?.trim();
+      if (!dishName) return [];
       return Array(count).fill(dishName);
     });
-
-    // Flatten the array and return the result
     return [].concat(...dishNames);
   }
 
   function processOrderDate(orderDate) {
-    /* Transform the string (example: "February 16, 2023 at 02:01 PM") 
-                into object of the form { year: 2023, month: 2, day: 16, timeSlot: 14 } 
-                timeSlot is the interval of 1 hour starting from 0 to 23
-        */
-    const date = new Date(orderDate.replace('at', ''));
-    const year = date.getFullYear();
-    const month = date.getMonth() + 1; // JavaScript months are 0-11
-    const day = date.getDate();
-    const timeSlot = date.getHours(); // 24-hour format
-
-    return { year, month, day, timeSlot };
+    if (!orderDate || typeof orderDate !== 'string') return null;
+    const date = new Date(orderDate.replace(' at', ''));
+    if (isNaN(date.getTime())) return null;
+    return {
+      year: date.getFullYear(),
+      month: date.getMonth() + 1,
+      day: date.getDate(),
+      timeSlot: date.getHours(),
+    };
   }
 
   return {
@@ -106,7 +106,7 @@ const useZomatoScrapper = () => {
     zomatoCurrentPage: currentPage,
     zomatoTotalOrders: totalOrders,
     zomatoLoading: loading,
-    zomatoError: error
+    zomatoError: error,
   };
 };
 

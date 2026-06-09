@@ -1,18 +1,19 @@
 {
   "name": "munchmetrics-chrome-extension",
-  "version": "3.0.0",
+  "version": "3.0.4",
   "description": "Chrome extension for the app MunchMetrics",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/jaga341/munchmetrics-chrome-extension.git"
+    "url": "https://github.com/jaga3421/munchmetrics-chrome-extension.git"
   },
   "scripts": {
     "build": "node utils/build.js",
     "dev": "node utils/webserver.js",
     "prettier": "prettier --write '**/*.{js,jsx,ts,tsx,json,css,scss,md}'",
     "watch:css": "npx tailwindcss -i ./src/tailwind-i.css -o ./src/index.css --watch",
-    "start": "concurrently \"npm run watch:css\" \"npm run dev\""
+    "start": "concurrently \"npm run watch:css\" \"npm run dev\"",
+    "bump": "npm version patch --no-git-tag-version"
   },
   "dependencies": {
     "@heroicons/react": "^2.1.1",
@@ -20,8 +21,10 @@
     "axios": "^1.6.2",
     "concurrently": "^8.2.2",
     "framer-motion": "^10.18.0",
+    "html2canvas": "^1.4.1",
     "lottie": "^0.0.1",
     "lottie-react": "^2.4.0",
+    "lucide-react": "^1.17.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.12.0",
