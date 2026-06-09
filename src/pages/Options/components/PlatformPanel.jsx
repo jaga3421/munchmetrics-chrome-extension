@@ -127,6 +127,8 @@ const PlatformPanel = ({
   emptyMessage,
   isStuck = false,
   onYearChange,
+  selectedYear: selectedYearProp,
+  onSelectYear,
 }) => {
   const reviewFn = brand === 'zomato' ? zReview : sReview;
   const monthsFn = brand === 'zomato' ? zMonths : sMonths;
@@ -147,8 +149,18 @@ const PlatformPanel = ({
     ? currentYear
     : dataYears[0] || currentYear;
 
-  const [selectedYear, setSelectedYear] = useState(initialYear);
-  useEffect(() => setSelectedYear(initialYear), [initialYear]);
+  // If the parent passes a controlled selectedYear we use that (and report
+  // back via onSelectYear); otherwise fall back to local state. Lets
+  // DashboardView keep the Zomato year picked across tab switches.
+  const isControlled = selectedYearProp !== undefined;
+  const [internalYear, setInternalYear] = useState(initialYear);
+  useEffect(() => {
+    if (!isControlled) setInternalYear(initialYear);
+  }, [initialYear, isControlled]);
+  const selectedYear = isControlled ? selectedYearProp : internalYear;
+  const setSelectedYear = isControlled
+    ? onSelectYear || (() => {})
+    : setInternalYear;
 
   const yearOrders = ordersByYear?.[selectedYear] || [];
   const review = useMemo(() => {

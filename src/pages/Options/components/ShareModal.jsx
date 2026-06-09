@@ -158,11 +158,20 @@ const ShareModal = ({
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
         >
+          {/* Two-layer overlay: a frosted blur pane underneath, then a solid
+              tinted scrim above it so the page behind genuinely dims AND
+              defocuses instead of just going slightly hazy. */}
           <motion.div
-            className="absolute inset-0 bg-espresso-900/55 backdrop-blur-md"
-            onClick={onClose}
+            className="absolute inset-0 backdrop-blur-xl"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          />
+          <motion.div
+            className="absolute inset-0 bg-espresso-900"
+            onClick={onClose}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.7 }}
             exit={{ opacity: 0 }}
           />
 

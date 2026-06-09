@@ -1,43 +1,64 @@
-# Munchmetrics
+# 🍔 Munchmetrics
 
-> Where did your food money actually go?
+> **Where did your food money actually go?**
+> A Chrome extension that turns your **Zomato** and **Swiggy** order history into a year-in-review style dashboard.
 
-A Chrome extension that turns your **Zomato** and **Swiggy** order history into a year-in-review style dashboard. Total spend, top cravings, peak hunger hours, the dish you order way too often.
+- 💸 Total spend, average order, top dishes, peak hunger hours
+- 📈 Year-by-year breakdown for Zomato, this-year for Swiggy
+- 🔒 100% local - your orders never leave your browser
+- 🆓 No account, no signup, no backend
 
-Everything runs locally in your browser. Your orders never leave your machine - no server, no telemetry, no account needed.
+---
 
-![Munchmetrics dashboard preview](src/assets/img/logo-big.svg)
+## Install (for everyone)
 
-## Install (for users)
+1. Go to [**Releases**](https://github.com/jaga3421/munchmetrics-chrome-extension/releases) and download the latest `munchmetrics-chrome-extension-x.x.x.zip`.
+2. **Unzip** it somewhere you won't accidentally delete (e.g. `~/Documents/munchmetrics`).
+3. In Chrome, open `chrome://extensions`.
+4. Toggle **Developer mode** on (top-right corner).
+5. Click **Load unpacked** and pick the folder you just unzipped.
+6. The Munchmetrics 🍔 icon shows up in your toolbar. Click the puzzle 🧩 icon if you want to pin it.
 
-1. Download the latest `munchmetrics-chrome-extension-<version>.zip` from [Releases](https://github.com/jaga3421/munchmetrics-chrome-extension/releases) and unzip it.
-2. Open Chrome and go to `chrome://extensions`.
-3. Toggle **Developer mode** on (top right).
-4. Click **Load unpacked** and pick the unzipped folder.
-5. Pin the Munchmetrics icon to your toolbar.
-6. Sign in to [zomato.com](https://www.zomato.com/login) and/or [swiggy.com](https://www.swiggy.com/auth) in regular tabs.
-7. Click the Munchmetrics icon - your dashboard opens in a new tab.
+> Works on any Chromium browser - Chrome, Brave, Edge, Arc, Opera.
 
-### How it works
+## How to use it
 
-Munchmetrics calls Zomato and Swiggy's own order-history APIs using the session cookie that's already in your browser. Your data is processed entirely in the extension page and cached in `chrome.storage.local`. There is no backend.
+1. **Sign in** to [zomato.com](https://www.zomato.com/login) and/or [swiggy.com](https://www.swiggy.com/auth) in normal browser tabs.
+2. **Click the Munchmetrics icon** in your toolbar. Your dashboard opens in a new tab.
+3. The Welcome page shows your connection status:
+   - **Both connected** → hit "See my food story"
+   - **One connected** → you'll see that one's story; log in to the other for the full picture
+   - **Neither** → log in to either site, come back, click "Check again"
+4. Pick the year you want to look at on Zomato. Swiggy only goes back to the current year (their API doesn't expose older data).
+5. Use the **Share** button on the dashboard to download a snapshot card of your year as a PNG.
 
-## Dev setup
+## Privacy, in one paragraph
 
-### Requirements
+Munchmetrics calls Zomato and Swiggy's own order-history APIs **from your own browser**, using the same login cookie you'd use to view your orders manually. The numbers are crunched right inside the extension page and cached in `chrome.storage.local`. There is no Munchmetrics server. There is no analytics. There is no third party. To wipe everything: hit **Start over** in the dashboard, or uninstall the extension.
 
-- **Node 20+** (the build uses modern `babel-loader` which needs `fs/promises` and won't run on Node 12/14)
+## Common questions
+
+**Is my login info safe?** Yes - Munchmetrics never sees your password. It only piggybacks on your existing browser session.
+
+**Why does Swiggy only show this year?** Their order-history API stops there. We can't paginate past the current year. Zomato exposes everything, so we can.
+
+**The numbers look wrong / are missing.** Some orders (cancelled ones, gift cards, malformed timestamps) are skipped. Open the dashboard's browser DevTools console and file an issue with what you see.
+
+**Can I use it on Firefox?** Not yet - it's a Chromium MV3 extension. A Firefox port is welcome as a PR.
+
+---
+
+## For developers
+
+### Prerequisites
+
+- **Node 20+** (the build uses modern `babel-loader` which won't run on Node 12/14)
 - npm (bundled with Node)
-- Chrome / Chromium / Edge
+- Chromium-based browser
 
-If you use `nvm`:
+Using nvm? `nvm install 20 && nvm use 20`.
 
-```sh
-nvm install 20
-nvm use 20
-```
-
-### First time
+### Setup
 
 ```sh
 git clone https://github.com/jaga3421/munchmetrics-chrome-extension.git
@@ -51,13 +72,7 @@ npm install
 npm run build
 ```
 
-Output lands in `build/`. Then in Chrome:
-
-1. `chrome://extensions` -> enable **Developer mode**
-2. **Load unpacked** -> select the `build/` folder
-3. The icon appears in your toolbar.
-
-After any code change: re-run `npm run build` and click the reload icon on the Munchmetrics card in `chrome://extensions`.
+Output lands in `build/`. Load it in Chrome via **chrome://extensions → Load unpacked → pick `build/`**. After every code change, run `npm run build` again and hit the reload icon on the Munchmetrics card.
 
 ### Watch mode
 
@@ -65,60 +80,45 @@ After any code change: re-run `npm run build` and click the reload icon on the M
 npm start
 ```
 
-Runs Tailwind in watch mode + `webpack-dev-server` with HMR on `:3000`. You still load `build/` as **unpacked**. Popup, options, and content scripts auto-refresh on save. Background-script and `manifest.json` changes still require a manual extension reload.
+Runs Tailwind in watch mode + the webpack dev server with HMR. You still load `build/` as unpacked. Popup / options scripts auto-refresh on save. Background-script or `manifest.json` changes still require a manual extension reload.
 
-### Other scripts
+### Scripts
 
-| Script | What it does |
+| Script | What |
 |---|---|
-| `npm run build` | One-off production build. Outputs `build/` and a versioned `.zip`. |
+| `npm run build` | One-off production build. Outputs `build/` + a versioned `.zip`. |
 | `npm start` | Tailwind watch + webpack dev server. |
-| `npm run dev` | Just webpack dev server (no CSS watch). |
+| `npm run dev` | Just the webpack dev server. |
 | `npm run watch:css` | Just Tailwind watch. |
-| `npm run bump` | Patch-bump the version in `package.json` (e.g. `3.0.6` -> `3.0.7`). Webpack injects this into the built `manifest.json` automatically. |
+| `npm run bump` | Patch-bump the version in `package.json`. Webpack auto-injects it into the built `manifest.json`. |
 | `npm run prettier` | Format all source files. |
 
-## Project layout
+### Project layout
 
 ```
 src/
 ├── manifest.json              MV3 manifest (action opens options tab)
 ├── pages/
 │   ├── Background/index.js    Service worker - opens options page on icon click
-│   ├── Options/               The page the user actually sees (login + dashboard)
-│   │   ├── Options.jsx        Orchestrator - login checks, Welcome <-> Dashboard
-│   │   └── components/        Welcome, DashboardView, charts, etc.
-│   ├── Popup/                 Legacy popup (no longer wired to the toolbar)
-│   └── Content/               Content script (no-op today)
+│   └── Options/               The page the user sees (Welcome + Dashboard)
+│       ├── Options.jsx        Login checks, Welcome <-> Dashboard switching
+│       └── components/        Welcome, DashboardView, charts, etc.
 ├── hooks/
-│   ├── useZomatoScrapper.jsx  Paginates Zomato /webroutes/user/orders
-│   └── useSwiggyScrapper.jsx  Walks Swiggy /dapi/order/all with cursor pagination
+│   ├── useZomatoScrapper.jsx  Paginates /webroutes/user/orders
+│   └── useSwiggyScrapper.jsx  Walks /dapi/order/all
 ├── helpers/
 │   ├── zomato.js              groupByYears, generateYearlyReview, etc.
-│   ├── swiggy.js              Same shape, for Swiggy
+│   ├── swiggy.js              Same shape for Swiggy
 │   └── format.js              fmtInt, fmtINR, orderCost
 └── assets/img/                Icons + logo
 ```
 
-The deep architecture notes (API shapes, render flow, gotchas, copy style) live in [AGENTS.md](AGENTS.md).
+Deep notes (API shapes, render flow, copy style, versioning rule) live in [AGENTS.md](AGENTS.md). Read it before opening a PR.
 
-## Stack
+### Stack
 
-- React 18, Tailwind 3
-- Framer Motion for animations / parallax / layout transitions
-- Recharts for the area + bar charts
-- Lucide React for UI icons (brand logos inlined - lucide drops them for trademark reasons)
-- Fonts: Fraunces (display), Fredoka (brand wordmark), DM Sans (body) - all from Google Fonts
-- Webpack 5 + Babel via `utils/build.js`
+React 18 · Tailwind 3 · Framer Motion · Recharts · Lucide icons · html2canvas · Fraunces + Fredoka + DM Sans · Webpack 5 + Babel.
 
-## Privacy
+## License + credit
 
-Munchmetrics hits Zomato and Swiggy's own APIs from your own browser session. No request ever goes to a Munchmetrics server (there isn't one). Your fetched orders are cached in `chrome.storage.local` only. Hit **Start over** in the dashboard to wipe the cache.
-
-## Contributing
-
-PRs welcome. Read [AGENTS.md](AGENTS.md) first - it has the copy style guide, versioning rule (patch-bump every change), and the API quirks for both platforms.
-
-## License
-
-MIT. Made with hunger by [JJay](https://instagram.com/whereis.the.food).
+MIT. Made with hunger by [JJay](https://instagram.com/whereis.the.food). PRs welcome.

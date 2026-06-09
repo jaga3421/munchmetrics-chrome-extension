@@ -130,6 +130,9 @@ const DashboardView = ({
   const [tab, setTab] = useState(defaultTab);
   const [revealed, setRevealed] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
+  // Lifted out of PlatformPanel so the choice persists across Zomato <-> Swiggy
+  // tab switches (each tab switch remounts the panel under AnimatePresence).
+  const [zomatoSelectedYear, setZomatoSelectedYear] = useState(currentYear);
   const confettiCanvasRef = useRef(null);
   const pendingScrollY = useRef(null);
 
@@ -278,6 +281,12 @@ const DashboardView = ({
                       switchTab={switchTab}
                       isStuck={isStuck}
                       onYearChange={scrollToStickyTop}
+                      selectedYear={
+                        tab === 'zomato' ? zomatoSelectedYear : undefined
+                      }
+                      onSelectYear={
+                        tab === 'zomato' ? setZomatoSelectedYear : undefined
+                      }
                       ordersByYear={
                         tab === 'zomato' ? zomatoByYear : swiggyByYear
                       }
