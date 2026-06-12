@@ -11,6 +11,13 @@
     background-color: #fbf3e6;
     color: #2a140c;
     -webkit-font-smoothing: antialiased;
+    /* Disable scroll anchoring globally - we change the sticky bar height when
+       it pins, and Chrome's anchoring tries to re-adjust scrollY, which
+       feedback-loops with our IntersectionObserver. */
+    overflow-anchor: none;
+  }
+  * {
+    overflow-anchor: none;
   }
   .font-display {
     font-family: 'Fraunces', Georgia, serif;

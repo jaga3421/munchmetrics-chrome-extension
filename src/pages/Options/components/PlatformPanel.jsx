@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { TrendingUp, Clock, Utensils, Store } from 'lucide-react';
+import { TrendingUp, Clock, Utensils, Store, Receipt, MapPin, Coins } from 'lucide-react';
 import logoUrl from '../../../assets/img/logo.svg';
 import {
   generateYearlyReview as zReview,
@@ -102,6 +102,66 @@ const TabPill = ({ active, brand, children, onClick }) => {
         />
       )}
     </motion.button>
+  );
+};
+
+// Single-row condensed version of the You-Spent card + 4 metric tiles. Renders
+// only when the sticky bar is actually pinned, so the user reclaims most of
+// the vertical space the full tiles were eating.
+const CompactMetricsStrip = ({ yearLabel, review, avg, accentHex }) => {
+  const items = [
+    {
+      Icon: Receipt,
+      label: 'orders',
+      value: fmtInt(review?.total_orders || 0),
+    },
+    {
+      Icon: Store,
+      label: 'restaurants',
+      value: fmtInt(review?.total_restaurants || 0),
+    },
+    {
+      Icon: MapPin,
+      label: 'cities',
+      value: fmtInt(review?.all_cities?.length || 0),
+    },
+    {
+      Icon: Coins,
+      label: 'avg / order',
+      value: fmtINR(avg),
+    },
+  ];
+  return (
+    <div className="flex items-center justify-between gap-3 flex-wrap rounded-2xl bg-white shadow-card px-5 py-3">
+      <div className="flex items-baseline gap-2.5 min-w-0">
+        <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-espresso-800/50 shrink-0">
+          {yearLabel}
+        </span>
+        <span
+          className="font-display font-extrabold tabular-nums text-[24px] sm:text-[28px] leading-none"
+          style={{ color: accentHex }}
+        >
+          {fmtINR(review?.total_cost_spent || 0)}
+        </span>
+      </div>
+      <div className="flex items-center gap-3 sm:gap-5 flex-wrap">
+        {items.map(({ Icon, label, value }) => (
+          <div
+            key={label}
+            className="inline-flex items-center gap-1.5 text-espresso-900"
+          >
+            <Icon
+              className="w-[15px] h-[15px] text-espresso-800/70"
+              strokeWidth={2.2}
+            />
+            <span className="font-display font-extrabold text-[15px] tabular-nums">
+              {value}
+            </span>
+            <span className="text-[12px] text-espresso-800/55">{label}</span>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 };
 
@@ -302,32 +362,45 @@ active={tab === 'swiggy'}
         )}
 
         {hasAnyOrders && !noOrdersThisYear && (
-          <div className="grid grid-cols-2 lg:grid-cols-6 gap-4 items-stretch">
-            <Card
-              className="lg:col-span-2 p-5 flex flex-col justify-between min-h-[160px] col-span-2"
-              delay={0.05}
-              hover={false}
-              inView={false}
-            >
-              <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-espresso-800/50">
-                You spent · {yearLabel}
-              </p>
-              <div
-                className="font-display font-extrabold leading-[0.95] tabular-nums"
-                style={{
-                  color: accentHex,
-                  fontSize: 'clamp(36px, 4vw, 52px)',
-                }}
+          // No AnimatePresence here - mode="wait" created a transient zero-
+          // height gap mid-swap that worsened the layout jitter. Render one or
+          // the other directly. The crossfade/spring on the inner content
+          // still gives a polished feel.
+          isStuck ? (
+            <CompactMetricsStrip
+              yearLabel={yearLabel}
+              review={review}
+              avg={avg}
+              accentHex={accentHex}
+            />
+          ) : (
+            <div className="grid grid-cols-2 lg:grid-cols-6 gap-4 items-stretch">
+              <Card
+                className="lg:col-span-2 p-5 flex flex-col justify-between min-h-[160px] col-span-2"
+                delay={0.05}
+                hover={false}
+                inView={false}
               >
-                {fmtINR(review?.total_cost_spent || 0)}
-              </div>
-              <p className="text-espresso-800/70 text-sm">
-                {fmtInt(review?.total_orders || 0)} orders · {fmtINR(avg)} avg
-                per order
-              </p>
-            </Card>
-            <MetricsGrid review={review} startDelay={0.12} />
-          </div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.15em] text-espresso-800/50">
+                  You spent · {yearLabel}
+                </p>
+                <div
+                  className="font-display font-extrabold leading-[0.95] tabular-nums"
+                  style={{
+                    color: accentHex,
+                    fontSize: 'clamp(36px, 4vw, 52px)',
+                  }}
+                >
+                  {fmtINR(review?.total_cost_spent || 0)}
+                </div>
+                <p className="text-espresso-800/70 text-sm">
+                  {fmtInt(review?.total_orders || 0)} orders · {fmtINR(avg)} avg
+                  per order
+                </p>
+              </Card>
+              <MetricsGrid review={review} startDelay={0.12} />
+            </div>
+          )
         )}
       </div>
     </div>

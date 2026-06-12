@@ -13,6 +13,7 @@ import PlatformPanel from './PlatformPanel';
 import GlobalParallax from './GlobalParallax';
 import Footer from './Footer';
 import ShareModal from './ShareModal';
+import RateNudge from './RateNudge';
 import { fireConfetti } from './confetti';
 import logoUrl from '../../../assets/img/logo.svg';
 import {
@@ -137,32 +138,64 @@ const DashboardView = ({
   const pendingScrollY = useRef(null);
 
   // Single source of truth for "is the panel sticky bar pinned at the top?".
-  // One sentinel + one IntersectionObserver shared across both PlatformPanels,
-  // so the stuck-logo never flickers when switching tabs.
+  // Scroll-based detection with EXPLICIT hysteresis: once stuck, the sentinel
+  // has to come back into view by at least 80px to unstick. Once unstuck, the
+  // sentinel has to scroll past the viewport top by at least 20px to stick.
+  // The 100px dead-zone is well bigger than the ~100px height jump caused by
+  // the metrics-row collapse, so the collapse can never flip us back.
   const stickySentinelRef = useRef(null);
   const [isStuck, setIsStuck] = useState(false);
+  const isStuckRef = useRef(false);
   useEffect(() => {
-    const sentinel = stickySentinelRef.current;
-    if (!sentinel || typeof IntersectionObserver === 'undefined') return;
-    const obs = new IntersectionObserver(
-      ([entry]) => setIsStuck(!entry.isIntersecting),
-      { threshold: 0 }
-    );
-    obs.observe(sentinel);
-    return () => obs.disconnect();
+    isStuckRef.current = isStuck;
+  }, [isStuck]);
+
+  useEffect(() => {
+    if (!revealed) return undefined;
+    let frame = 0;
+    const measure = () => {
+      const sentinel = stickySentinelRef.current;
+      if (!sentinel) return;
+      const top = sentinel.getBoundingClientRect().top;
+      const stuck = isStuckRef.current;
+      if (!stuck && top < -20) {
+        isStuckRef.current = true;
+        setIsStuck(true);
+      } else if (stuck && top > 80) {
+        isStuckRef.current = false;
+        setIsStuck(false);
+      }
+    };
+    const onScroll = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        measure();
+      });
+    };
+    measure();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    return () => {
+      if (frame) cancelAnimationFrame(frame);
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    };
   }, [revealed]);
 
-  // Smooth-scroll past the sentinel so the sticky bar is fully pinned AND the
-  // in-bar Munchmetrics logo shows. Scrolling exactly to the sentinel leaves
-  // it still intersecting the viewport (IntersectionObserver reports stuck =
-  // false), so we add a small overshoot. requestAnimationFrame defers the
+  // Smooth-scroll past the FULL sentinel so the sticky bar pins firmly inside
+  // the hysteresis zone. We need sentinel.top in the viewport to be more
+  // negative than the "become stuck" threshold (-20) by a comfortable margin.
+  // Scrolling to `scrollY + rect.top + rect.height + 30` lands the sentinel
+  // 30px above the viewport, with the sticky bar's natural top right at 0 -
+  // exactly the "fully sticky" state. requestAnimationFrame defers the
   // measurement to after the React re-render that selectedYear triggered.
   const scrollToStickyTop = useCallback(() => {
     requestAnimationFrame(() => {
       const sentinel = stickySentinelRef.current;
       if (!sentinel) return;
       const rect = sentinel.getBoundingClientRect();
-      const target = window.scrollY + rect.top + 8;
+      const target = window.scrollY + rect.top + rect.height + 30;
       window.scrollTo({ top: target, behavior: 'smooth' });
     });
   }, []);
@@ -256,11 +289,13 @@ const DashboardView = ({
                 transition={{ duration: 0.5, ease: 'easeOut' }}
               >
                 {/* Shared sentinel - when this scrolls out of view, the panel
-                    sticky bar has pinned and the in-bar logo should fade in. */}
+                    sticky bar has pinned and the in-bar logo should fade in.
+                    Height of 60px (not 1px) gives the observer a dead-zone so
+                    isStuck doesn't flicker on the boundary. */}
                 <div
                   ref={stickySentinelRef}
                   aria-hidden
-                  style={{ height: 1 }}
+                  style={{ height: 60 }}
                 />
                 {/* AnimatePresence with mode="popLayout" briefly keeps both
                     panels in the DOM during a tab switch, so the shared
@@ -319,6 +354,8 @@ const DashboardView = ({
         zomatoTotal={zomatoTotal}
         swiggyTotal={swiggyTotal}
       />
+
+      {revealed && <RateNudge />}
     </div>
   );
 };
